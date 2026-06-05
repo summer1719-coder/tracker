@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>回覆追蹤儀表板</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+/* ── Theme variables ── */
+:root {
+  --fs-base: 14px;
+  --fs-sm: 11px;
+  --fs-lg: 16px;
+  --fs-xl: 20px;
+  --sans: 'Noto Sans TC', sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
+  --radius: 10px;
+}
+
+/* DARK theme (default) */
+[data-theme="dark"] {
+  --bg: #0f1117;
+  --surface: #181c27;
+  --surface2: #1e2333;
+  --border: #2a3045;
+  --border2: #323952;
+  --text: #e8eaf0;
+  --muted: #6b7494;
+  --muted2: #8892b0;
+  --green: #3ddc84;
+  --green-dim: rgba(61,220,132,.13);
+  --red: #ff6b6b;
+  --red-dim: rgba(255,107,107,.13);
+  --yellow: #ffc857;
+  --yellow-dim: rgba(255,200,87,.11);
+  --blue: #64b5f6;
+  --blue-dim: rgba(100,181,246,.11);
+  --accent: #7c8cf8;
+  --accent-dim: rgba(124,140,248,.13);
+  --shadow: 0 4px 24px rgba(0,0,0,.4);
+  --toggle-knob: #7c8cf8;
+}
+
+/* LIGHT theme */
+[data-theme="light"] {
+  --bg: #f0ede6;
+  --surface: #faf8f4;
+  --surface2: #f0ede6;
+  --border: #ddd8cc;
+  --border2: #c8c2b4;
+  --text: #1e1c18;
+  --muted: #7a7264;
+  --muted2: #5a5448;
+  --green: #1a7a45;
+  --green-dim: rgba(26,122,69,.1);
+  --red: #c0392b;
+  --red-dim: rgba(192,57,43,.1);
+  --yellow: #c87800;
+  --yellow-dim: rgba(200,120,0,.1);
+  --blue: #1565c0;
+  --blue-dim: rgba(21,101,192,.1);
+  --accent: #4a5bd4;
+  --accent-dim: rgba(74,91,212,.1);
+  --shadow: 0 2px 16px rgba(0,0,0,.1);
+  --toggle-knob: #4a5bd4;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--sans);
+  font-size: var(--fs-base);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background .25s, color .25s;
+}
+
+/* ── Layout ── */
+.app { display: grid; grid-template-columns: 268px 1fr; min-height: 100vh; }
+
+/* ── Sidebar ── */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  transition: background .25s, border-color .25s;
+}
+.sidebar-top { padding: 18px 16px 12px; border-bottom: 1px solid var(--border); }
+.logo { font-size: var(--fs-sm); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 2px; }
+.logo-sub { font-size: calc(var(--fs-sm) - 1px); color: var(--muted); font-family: var(--mono); }
+
+/* ── Settings bar in sidebar ── */
+.settings-bar {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+
+/* Theme toggle */
+.theme-toggle {
+  display: flex; align-items: center; gap: 6px;
+  cursor: pointer; user-select: none;
+}
+.toggle-track {
+  width: 36px; height: 20px; border-radius: 99px;
+  background: var(--border2); position: relative; transition: background .2s;
+  flex-shrink: 0;
+}
+.toggle-track.on { background: var(--accent); }
+.toggle-knob {
+  position: absolute; top: 3px; left: 3px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #fff; transition: transform .2s;
+}
+.toggle-track.on .toggle-knob { transform: translateX(16px); }
+.toggle-label { font-size: var(--fs-sm); color: var(--muted); }
+
+/* Font size control */
+.fs-control { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.fs-label { font-size: var(--fs-sm); color: var(--muted); white-space: nowrap; }
+.fs-btn {
+  width: 26px; height: 26px; border-radius: 6px;
+  border: 1px solid var(--border2); background: var(--surface2);
+  color: var(--text); font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s; font-family: var(--mono); line-height: 1;
+}
+.fs-btn:hover { border-color: var(--accent); color: var(--accent); }
+.fs-value { font-size: var(--fs-sm); font-family: var(--mono); color: var(--muted); min-width: 28px; text-align: center; }
+
+.sidebar-section { padding: 12px 8px 0; }
+.sidebar-label { font-size: calc(var(--fs-sm) - 1px); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding: 0 8px 8px; font-family: var(--mono); }
+
+.survey-item {
+  padding: 9px 12px; border-radius: 8px; cursor: pointer;
+  margin-bottom: 2px; transition: background .15s;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.survey-item:hover { background: var(--surface2); }
+.survey-item.active { background: var(--accent-dim); border: 1px solid var(--accent); }
+.survey-item-name { font-size: var(--fs-base); font-weight: 500; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.survey-item-pct { font-size: calc(var(--fs-sm) - 1px); font-family: var(--mono); color: var(--muted); background: var(--surface2); padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+.survey-item.active .survey-item-pct { background: var(--accent-dim); color: var(--accent); }
+
+.btn-new {
+  margin: 10px 8px 0; width: calc(100% - 16px);
+  padding: 9px; border-radius: 8px;
+  border: 1.5px dashed var(--border2); background: none;
+  color: var(--muted); font-family: var(--sans); font-size: var(--fs-base);
+  cursor: pointer; transition: all .15s; text-align: center;
+}
+.btn-new:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+.sidebar-bottom { margin-top: auto; padding: 12px 8px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+
+/* ── Main ── */
+.main { padding: 28px 32px 60px; overflow-y: auto; }
+
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; gap: 12px; color: var(--muted); }
+.empty-state .icon { font-size: 48px; opacity: .4; }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: 8px; font-family: var(--sans);
+  font-size: var(--fs-sm); font-weight: 500; cursor: pointer;
+  border: 1px solid var(--border2); background: var(--surface2);
+  color: var(--text); transition: all .15s;
+}
+.btn:hover { border-color: var(--muted); }
+.btn.green { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.btn.red { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+.btn.accent { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+.btn.yellow { background: var(--yellow-dim); border-color: var(--yellow); color: var(--yellow); }
+.btn.pa { background: var(--blue-dim); border-color: var(--blue); color: var(--blue); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* ── Survey header ── */
+.survey-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+.survey-title-wrap h2 { font-size: var(--fs-xl); font-weight: 700; }
+.survey-title-wrap .sub { font-size: var(--fs-sm); color: var(--muted); margin-top: 4px; font-family: var(--mono); }
+.header-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ── Stats ── */
+.stats-row { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
+.stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 20px; flex: 1; min-width: 110px; transition: background .25s, border-color .25s; }
+.stat-box .n { font-size: 26px; font-weight: 700; font-family: var(--mono); line-height: 1; }
+.stat-box .l { font-size: var(--fs-sm); color: var(--muted); margin-top: 5px; letter-spacing: .06em; text-transform: uppercase; }
+.stat-box.g .n { color: var(--green); }
+.stat-box.r .n { color: var(--red); }
+.stat-box.y .n { color: var(--yellow); }
+
+/* ── Progress ── */
+.progress-wrap { margin-bottom: 20px; }
+.progress-track { background: var(--surface2); border-radius: 99px; height: 7px; overflow: hidden; margin-bottom: 6px; }
+.progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--green)); transition: width .5s cubic-bezier(.4,0,.2,1); }
+.progress-labels { display: flex; justify-content: space-between; }
+.progress-labels span { font-size: var(--fs-sm); color: var(--muted); font-family: var(--mono); }
+
+/* ── PA section ── */
+.pa-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--blue);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  transition: background .25s;
+}
+.pa-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; cursor: pointer; }
+.pa-title { font-size: var(--fs-base); font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--blue); }
+.pa-title .pa-icon { font-size: 18px; }
+.pa-body { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+.pa-body.hidden { display: none; }
+.pa-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.pa-input {
+  flex: 1; min-width: 240px;
+  padding: 8px 12px; background: var(--surface2);
+  border: 1px solid var(--border2); border-radius: 8px;
+  font-family: var(--mono); font-size: var(--fs-sm); color: var(--text);
+}
+.pa-input:focus { outline: none; border-color: var(--blue); }
+.pa-status { font-size: var(--fs-sm); font-family: var(--mono); padding: 4px 10px; border-radius: 6px; }
+.pa-status.sending { background: var(--yellow-dim); color: var(--yellow); }
+.pa-status.ok { background: var(--green-dim); color: var(--green); }
+.pa-status.err { background: var(--red-dim); color: var(--red); }
+.pa-hint { font-size: var(--fs-sm); color: var(--muted); line-height: 1.6; }
+.pa-hint code { font-family: var(--mono); background: var(--surface2); padding: 1px 5px; border-radius: 4px; font-size: calc(var(--fs-sm) - 1px); }
+
+/* ── Files legend ── */
+.files-legend { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+.files-legend-label { font-size: var(--fs-sm); color: var(--muted); }
+.file-pill { font-size: var(--fs-sm); padding: 3px 10px; border-radius: 99px; border: 1px solid var(--border2); background: var(--surface2); font-family: var(--mono); color: var(--muted2); }
+
+/* ── Filter bar ── */
+.filter-bar { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+.filter-btn { padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border); background: none; color: var(--muted); font-family: var(--sans); font-size: var(--fs-sm); cursor: pointer; transition: all .15s; }
+.filter-btn:hover { border-color: var(--muted); color: var(--text); }
+.filter-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+.filter-spacer { flex: 1; }
+.search-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; font-family: var(--sans); font-size: var(--fs-sm); color: var(--text); width: 160px; }
+.search-box::placeholder { color: var(--muted); }
+.search-box:focus { outline: none; border-color: var(--accent); }
+
+/* ── Table ── */
+.table-wrap { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: border-color .25s; }
+.table-head { display: grid; background: var(--surface2); border-bottom: 1px solid var(--border); }
+.th { padding: 10px 14px; font-size: calc(var(--fs-sm) - 1px); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-family: var(--mono); }
+.table-row { display: grid; align-items: center; border-bottom: 1px solid var(--border); background: var(--surface); transition: background .1s; }
+.table-row:last-child { border-bottom: none; }
+.table-row:hover { background: var(--surface2); }
+.table-row.all-done { background: color-mix(in srgb, var(--green-dim), var(--surface) 70%); }
+.table-row.partial { background: color-mix(in srgb, var(--yellow-dim), var(--surface) 80%); }
+.td { padding: 11px 14px; font-size: var(--fs-base); }
+.td .manager { color: var(--muted2); font-size: calc(var(--fs-base) - 1px); margin-top: 2px; }
+.td.emp { font-family: var(--mono); font-size: var(--fs-sm); color: var(--muted); }
+.td.files-checks { display: flex; gap: 6px; flex-wrap: wrap; padding: 10px 14px; }
+.td.note input { background: none; border: none; font-family: var(--sans); font-size: calc(var(--fs-base) - 1px); color: var(--muted); width: 100%; outline: none; }
+.td.note input:focus { color: var(--text); }
+.td.status { text-align: center; }
+
+.file-check {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 10px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--border2); background: var(--surface2);
+  font-size: var(--fs-sm); font-family: var(--mono); color: var(--muted);
+  transition: all .15s; user-select: none; white-space: nowrap;
+}
+.file-check:hover { border-color: var(--muted); }
+.file-check.done { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+.file-check .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: .7; flex-shrink: 0; }
+
+.overall-badge { display: inline-block; padding: 3px 9px; border-radius: 99px; font-size: var(--fs-sm); font-weight: 600; font-family: var(--mono); }
+.overall-badge.full { background: var(--green-dim); color: var(--green); }
+.overall-badge.partial { background: var(--yellow-dim); color: var(--yellow); }
+.overall-badge.none { background: var(--red-dim); color: var(--red); }
+
+.type-divider { padding: 8px 14px; font-size: calc(var(--fs-sm) - 1px); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--bg); border-bottom: 1px solid var(--border); font-family: var(--mono); display: flex; align-items: center; gap: 8px; }
+.type-divider .cnt { color: var(--muted2); }
+
+/* ── Modals ── */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+.overlay.open { display: flex; }
+.modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 14px; padding: 28px; width: 100%; max-width: 560px; box-shadow: var(--shadow); max-height: 90vh; overflow-y: auto; transition: background .25s; }
+.modal h3 { font-size: var(--fs-lg); font-weight: 700; margin-bottom: 18px; }
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: var(--fs-sm); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; display: block; font-family: var(--mono); }
+.form-input { width: 100%; padding: 9px 12px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; font-family: var(--sans); font-size: var(--fs-base); color: var(--text); transition: background .25s; }
+.form-input:focus { outline: none; border-color: var(--accent); }
+.template-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.tpl-btn { padding: 8px 10px; border: 1px solid var(--border2); border-radius: 8px; background: var(--surface2); color: var(--muted2); font-family: var(--sans); font-size: var(--fs-sm); cursor: pointer; text-align: left; transition: all .15s; }
+.tpl-btn:hover, .tpl-btn.selected { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.tpl-btn strong { display: block; font-size: var(--fs-base); margin-bottom: 2px; }
+.tpl-btn span { font-size: calc(var(--fs-sm) - 1px); font-family: var(--mono); color: var(--muted); }
+.members-list { max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
+.member-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: var(--fs-sm); }
+.member-item:last-child { border-bottom: none; }
+.member-item-info b { font-size: var(--fs-base); display: block; }
+.member-item-info small { font-family: var(--mono); font-size: calc(var(--fs-sm) - 1px); color: var(--muted); }
+.member-del, .file-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 15px; padding: 4px; border-radius: 4px; transition: color .15s; }
+.member-del:hover, .file-del:hover { color: var(--red); }
+.add-member-row { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.add-member-row .form-input { flex: 1; min-width: 90px; }
+.files-input-list { display: flex; flex-direction: column; gap: 6px; }
+.file-input-row { display: flex; gap: 6px; align-items: center; }
+.file-input-row .form-input { flex: 1; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px; }
+.export-textarea { width: 100%; height: 220px; background: var(--bg); border: 1px solid var(--border2); border-radius: 8px; padding: 12px; font-family: var(--mono); font-size: var(--fs-sm); color: var(--text); resize: none; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
+</style>
+</head>
+<body data-theme="dark">
+
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="logo">追蹤儀表板</div>
+      <div class="logo-sub">SURVEY TRACKER v3</div>
+    </div>
+
+    <!-- Settings bar -->
+    <div class="settings-bar">
+      <div class="theme-toggle" onclick="toggleTheme()">
+        <div class="toggle-track" id="theme-track">
+          <div class="toggle-knob"></div>
+        </div>
+        <span class="toggle-label" id="theme-label">🌙 深色</span>
+      </div>
+      <div class="fs-control">
+        <span class="fs-label">字</span>
+        <button class="fs-btn" onclick="changeFontSize(-1)">−</button>
+        <span class="fs-value" id="fs-display">14</span>
+        <button class="fs-btn" onclick="changeFontSize(1)">＋</button>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">調查活動</div>
+      <div id="sidebar-list"></div>
+      <button class="btn-new" onclick="openNewSurvey()">＋ 新增調查活動</button>
+    </div>
+    <div class="sidebar-bottom">
+      <button class="btn" style="width:100%;justify-content:center" onclick="importData()">⬆ 匯入備份</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main" id="main">
+    <div class="empty-state" id="empty-state">
+      <div class="icon">📋</div>
+      <p style="font-size:18px;font-weight:600;color:var(--text)">尚無調查活動</p>
+      <p>點選左側「新增調查活動」開始建立</p>
+    </div>
+    <div id="survey-view" style="display:none"></div>
+  </main>
+</div>
+
+<!-- New/Edit Survey Modal -->
+<div class="overlay" id="modal-survey">
+<div class="modal">
+  <h3 id="modal-survey-title">新增調查活動</h3>
+  <div class="form-group">
+    <label class="form-label">活動名稱</label>
+    <input class="form-input" id="f-name" placeholder="例：115(一) 子女公關用書提報">
+  </div>
+  <div class="form-group">
+    <label class="form-label">套用名單模板</label>
+    <div class="template-grid" id="tpl-grid"></div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">追蹤對象名單</label>
+    <div class="members-list" id="members-preview"></div>
+    <div class="add-member-row">
+      <input class="form-input" id="add-district" placeholder="區名" style="max-width:100px">
+      <input class="form-input" id="add-type" placeholder="類型" style="max-width:72px">
+      <input class="form-input" id="add-manager" placeholder="區經理姓名">
+      <input class="form-input" id="add-empid" placeholder="員工編號" style="max-width:96px">
+      <button class="btn accent" onclick="addMember()">新增</button>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">需繳交的檔案清單</label>
+    <div class="files-input-list" id="files-input-list"></div>
+    <button class="btn" style="margin-top:8px" onclick="addFileInput()">＋ 新增檔案</button>
+  </div>
+  <div class="modal-actions">
+    <button class="btn red" id="modal-delete-btn" style="display:none;margin-right:auto" onclick="deleteSurvey()">刪除活動</button>
+    <button class="btn" onclick="closeModal('modal-survey')">取消</button>
+    <button class="btn accent" onclick="saveSurvey()">儲存</button>
+  </div>
+</div>
+</div>
+
+<!-- Export Modal -->
+<div class="overlay" id="modal-export">
+<div class="modal">
+  <h3 id="export-title">匯出</h3>
+  <textarea class="export-textarea" id="export-content" readonly></textarea>
+  <div class="modal-actions">
+    <button class="btn" onclick="copyExport()">複製文字</button>
+    <button class="btn accent" onclick="downloadExport()">下載檔案</button>
+    <button class="btn" onclick="closeModal('modal-export')">關閉</button>
+  </div>
+</div>
+</div>
+
+<!-- PA Setup Modal -->
+<div class="overlay" id="modal-pa">
+<div class="modal" style="max-width:620px">
+  <h3>⚡ Power Automate 設定</h3>
+  <div class="form-group">
+    <label class="form-label">Webhook URL（Power Automate HTTP 觸發器）</label>
+    <input class="form-input" id="pa-url-input" placeholder="https://prod-xx.eastasia.logic.azure.com/workflows/...">
+  </div>
+  <div class="pa-hint" style="margin-bottom:16px">
+    <p style="margin-bottom:8px"><strong>如何取得 URL：</strong></p>
+    <ol style="padding-left:18px;line-height:2">
+      <li>在 Power Automate 建立新流程</li>
+      <li>觸發器選「<code>當收到 HTTP 要求時</code>」</li>
+      <li>儲存後複製產生的 <code>HTTP POST URL</code></li>
+      <li>貼到上方欄位並儲存</li>
+    </ol>
+    <p style="margin-top:10px">儀表板按下「發送提醒」後，會傳送以下 JSON 到你的流程：</p>
+    <pre style="margin-top:6px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px;font-family:var(--mono);font-size:11px;color:var(--muted2);white-space:pre-wrap">{
+  "surveyName": "115(一) 公關用書",
+  "sentAt": "2025/06/05 14:30",
+  "totalCount": 24,
+  "doneCount": 18,
+  "undoneList": [
+    { "type":"國小", "district":"北二區", "manager":"鄧克強", "missing":["國小提報表"] }
+  ],
+  "message": "📚 115(一) 公關用書\n尚有 6 區未完成..."
+}</pre>
+    <p style="margin-top:8px">PA 流程收到後，可用「<code>傳送 Teams 訊息</code>」或「<code>傳送電子郵件</code>」動作發送通知。</p>
+  </div>
+  <div class="modal-actions">
+    <button class="btn red" onclick="clearPAUrl()">清除設定</button>
+    <button class="btn" onclick="closeModal('modal-pa')">取消</button>
+    <button class="btn pa" onclick="savePAUrl()">儲存 URL</button>
+  </div>
+</div>
+</div>
+
+<input type="file" id="import-file-input" accept=".json" style="display:none" onchange="handleImport(event)">
+
+<script>
+// ── Templates ──
+const TEMPLATES = {
+  elem: { name:'國小區經理', desc:'13 區', members:[
+    {type:'國小',district:'北一區',manager:'陳清樺',emp_id:'1040911'},
+    {type:'國小',district:'北二區',manager:'鄧克強',emp_id:'920233'},
+    {type:'國小',district:'北三區',manager:'孫丕榮',emp_id:'1070801'},
+    {type:'國小',district:'桃園區',manager:'王凡昇',emp_id:'970903'},
+    {type:'國小',district:'桃竹區',manager:'高筠茹',emp_id:'1080823'},
+    {type:'國小',district:'語北桃(台北)',manager:'陳健政',emp_id:'891213'},
+    {type:'國小',district:'中一區',manager:'張怡斌',emp_id:'980710'},
+    {type:'國小',district:'中二區',manager:'葉柏宏',emp_id:'961206'},
+    {type:'國小',district:'雲嘉區',manager:'馬育民',emp_id:'961110'},
+    {type:'國小',district:'台南區',manager:'楊堡弘',emp_id:'1000826'},
+    {type:'國小',district:'高一區',manager:'劉豐明',emp_id:'891209'},
+    {type:'國小',district:'高二區',manager:'洪清裕',emp_id:'971013'},
+    {type:'國小',district:'語教中南(台中)',manager:'彭國斌',emp_id:'961003'},
+  ]},
+  jhs: { name:'國中區經理', desc:'11 區', members:[
+    {type:'國中',district:'北一區',manager:'顏程回',emp_id:'950907'},
+    {type:'國中',district:'北二區',manager:'周士貽',emp_id:'1110915'},
+    {type:'國中',district:'北三區',manager:'陳品豪',emp_id:'1030958'},
+    {type:'國中',district:'北四區',manager:'楊正良',emp_id:'981008'},
+    {type:'國中',district:'桃園區',manager:'陳芯玲',emp_id:'990108'},
+    {type:'國中',district:'桃竹區',manager:'陳興',  emp_id:'1020808'},
+    {type:'國中',district:'中一區',manager:'岳君豪',emp_id:'1000805'},
+    {type:'國中',district:'中二區',manager:'詹明鑫',emp_id:'930412'},
+    {type:'國中',district:'台南區',manager:'楊哲寬',emp_id:'911038'},
+    {type:'國中',district:'高一區',manager:'黃一訓',emp_id:'1020912'},
+    {type:'國中',district:'高二區',manager:'洪瑞源',emp_id:'880920'},
+  ]},
+};
+TEMPLATES.both = { name:'國小＋國中', desc:'24 區', members:[...TEMPLATES.elem.members,...TEMPLATES.jhs.members] };
+
+// ── State ──
+const STORE = 'tracker_v3';
+const PREFS = 'tracker_prefs';
+let db = { surveys:[] };
+let prefs = { theme:'dark', fontSize:14, paUrl:'' };
+let activeSurveyId = null;
+let editSurveyId = null;
+let modalMembers = [];
+let modalFiles = [];
+let selectedTpls = new Set();
+let activeFilter = 'all';
+let searchQ = '';
+
+function loadDB(){ try{ const s=localStorage.getItem(STORE); if(s) db=JSON.parse(s); }catch(e){} }
+function saveDB(){ localStorage.setItem(STORE,JSON.stringify(db)); }
+function loadPrefs(){ try{ const s=localStorage.getItem(PREFS); if(s) prefs=Object.assign(prefs,JSON.parse(s)); }catch(e){} }
+function savePrefs(){ localStorage.setItem(PREFS,JSON.stringify(prefs)); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function getSurvey(id){ return db.surveys.find(s=>s.id===id); }
+function getCheck(s,mid,fi){ return !!(s.checks&&s.checks[`${mid}_${fi}`]); }
+function setCheck(s,mid,fi,v){ if(!s.checks)s.checks={}; s.checks[`${mid}_${fi}`]=v; saveDB(); }
+function getNote(s,mid){ return (s.notes&&s.notes[mid])||''; }
+function setNote(s,mid,v){ if(!s.notes)s.notes={}; s.notes[mid]=v; saveDB(); }
+
+function surveyStats(survey){
+  let total=0,fullDone=0,partial=0;
+  const nF=survey.files.length;
+  survey.members.forEach(m=>{
+    const done=survey.files.filter((_,fi)=>getCheck(survey,m.id,fi)).length;
+    total++;
+    if(done===nF) fullDone++;
+    else if(done>0) partial++;
+  });
+  return {total,fullDone,partial,undone:total-fullDone};
+}
+
+// ── Theme & Font ──
+function applyPrefs(){
+  document.body.setAttribute('data-theme', prefs.theme);
+  document.documentElement.style.setProperty('--fs-base', prefs.fontSize+'px');
+  document.documentElement.style.setProperty('--fs-sm', (prefs.fontSize-3)+'px');
+  document.documentElement.style.setProperty('--fs-lg', (prefs.fontSize+2)+'px');
+  document.documentElement.style.setProperty('--fs-xl', (prefs.fontSize+6)+'px');
+  const isDark = prefs.theme==='dark';
+  const track = document.getElementById('theme-track');
+  const label = document.getElementById('theme-label');
+  if(track){ track.className='toggle-track'+(isDark?' on':''); }
+  if(label){ label.textContent = isDark ? '🌙 深色' : '☀️ 淺色'; }
+  document.getElementById('fs-display').textContent = prefs.fontSize;
+}
+
+function toggleTheme(){
+  prefs.theme = prefs.theme==='dark' ? 'light' : 'dark';
+  savePrefs(); applyPrefs();
+}
+
+function changeFontSize(delta){
+  prefs.fontSize = Math.max(12, Math.min(22, prefs.fontSize+delta));
+  savePrefs(); applyPrefs();
+}
+
+// ── Sidebar ──
+function renderSidebar(){
+  const el=document.getElementById('sidebar-list');
+  if(!db.surveys.length){ el.innerHTML='<div style="padding:8px 12px;font-size:var(--fs-sm);color:var(--muted)">尚無活動</div>'; return; }
+  el.innerHTML=db.surveys.map(s=>{
+    const st=surveyStats(s);
+    const pct=st.total?Math.round(st.fullDone/st.total*100):0;
+    return `<div class="survey-item ${s.id===activeSurveyId?'active':''}" onclick="openSurvey('${s.id}')">
+      <span class="survey-item-name">${s.name}</span>
+      <span class="survey-item-pct">${pct}%</span>
+    </div>`;
+  }).join('');
+}
+
+// ── Survey view ──
+function openSurvey(id){ activeSurveyId=id; activeFilter='all'; searchQ=''; renderSidebar(); renderSurveyView(); }
+
+function renderSurveyView(){
+  const survey=getSurvey(activeSurveyId);
+  if(!survey) return;
+  document.getElementById('empty-state').style.display='none';
+  document.getElementById('survey-view').style.display='block';
+
+  const st=surveyStats(survey);
+  const pct=st.total?Math.round(st.fullDone/st.total*100):0;
+  const nF=survey.files.length;
+  const fixedCols='190px 88px';
+  const fileCols=survey.files.map(()=>'1fr').join(' ');
+  const gridTpl=`${fixedCols} ${fileCols} 1fr 80px`;
+
+  let members=[...survey.members];
+  if(searchQ){ const q=searchQ.toLowerCase(); members=members.filter(m=>m.district.includes(q)||m.manager.includes(q)||(m.type||'').includes(q)); }
+  if(activeFilter==='undone') members=members.filter(m=>survey.files.filter((_,fi)=>getCheck(survey,m.id,fi)).length<nF);
+  else if(activeFilter==='partial') members=members.filter(m=>{ const d=survey.files.filter((_,fi)=>getCheck(survey,m.id,fi)).length; return d>0&&d<nF; });
+  else if(activeFilter==='done') members=members.filter(m=>survey.files.every((_,fi)=>getCheck(survey,m.id,fi)));
+
+  const types=[...new Set(members.map(m=>m.type||''))];
+  let rowsHtml='';
+  types.forEach(tp=>{
+    const tpM=members.filter(m=>(m.type||'')===tp);
+    rowsHtml+=`<div class="type-divider">${tp||'未分類'}<span class="cnt">${tpM.length} 區</span></div>`;
+    tpM.forEach(m=>{
+      const doneC=survey.files.filter((_,fi)=>getCheck(survey,m.id,fi)).length;
+      const rowCls=doneC===nF?'all-done':doneC>0?'partial':'';
+      const badgeCls=doneC===nF?'full':doneC>0?'partial':'none';
+      const badgeTxt=doneC===nF?'全交':doneC>0?`${doneC}/${nF}`:'未交';
+      const chips=survey.files.map((f,fi)=>{
+        const chk=getCheck(survey,m.id,fi);
+        return `<span class="file-check ${chk?'done':''}" onclick="toggleCheck('${survey.id}','${m.id}',${fi})"><span class="dot"></span>${f}</span>`;
+      }).join('');
+      rowsHtml+=`<div class="table-row ${rowCls}" style="grid-template-columns:${gridTpl}">
+        <div class="td"><div style="font-weight:600">${m.type?`<span style="font-size:calc(var(--fs-sm) - 1px);color:var(--muted);margin-right:4px">${m.type}</span>`:''}${m.district}</div><div class="manager">${m.manager}</div></div>
+        <div class="td emp">${m.emp_id||'—'}</div>
+        <div class="td files-checks" style="grid-column:span ${nF}">${chips}</div>
+        <div class="td note"><input placeholder="備註…" value="${getNote(survey,m.id)}" onchange="noteChange('${survey.id}','${m.id}',this.value)" onblur="noteChange('${survey.id}','${m.id}',this.value)"></div>
+        <div class="td status"><span class="overall-badge ${badgeCls}">${badgeTxt}</span></div>
+      </div>`;
+    });
+  });
+
+  const filePills=survey.files.map(f=>`<span class="file-pill">${f}</span>`).join('');
+  const hasPAUrl=!!prefs.paUrl;
+
+  document.getElementById('survey-view').innerHTML=`
+    <div class="survey-header">
+      <div class="survey-title-wrap">
+        <h2>${survey.name}</h2>
+        <div class="sub">建立於 ${new Date(survey.created).toLocaleDateString('zh-TW')} ・ ${survey.members.length} 區 ・ ${nF} 份檔案</div>
+      </div>
+      <div class="header-btns">
+        <button class="btn" onclick="openEditSurvey('${survey.id}')">✏️ 編輯</button>
+        <button class="btn yellow" onclick="exportLine('${survey.id}')">💬 LINE 訊息</button>
+        <button class="btn green" onclick="exportCSV('${survey.id}')">⬇ 匯出 CSV</button>
+        <button class="btn" onclick="exportJSON()">💾 備份</button>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-box"><div class="n">${st.total}</div><div class="l">總區數</div></div>
+      <div class="stat-box g"><div class="n">${st.fullDone}</div><div class="l">全部繳交</div></div>
+      <div class="stat-box y"><div class="n">${st.partial}</div><div class="l">部分繳交</div></div>
+      <div class="stat-box r"><div class="n">${st.undone}</div><div class="l">尚未繳交</div></div>
+      <div class="stat-box"><div class="n">${pct}%</div><div class="l">完成率</div></div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="progress-labels"><span>${st.fullDone} / ${st.total} 區全部完成</span><span>${pct}%</span></div>
+    </div>
+
+    <!-- PA Section -->
+    <div class="pa-section">
+      <div class="pa-header" onclick="togglePA()">
+        <div class="pa-title"><span class="pa-icon">⚡</span>Power Automate 發送提醒</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span id="pa-url-status" style="font-size:var(--fs-sm);font-family:var(--mono);color:${hasPAUrl?'var(--green)':'var(--muted)'}">${hasPAUrl?'✓ 已設定 Webhook':'未設定'}</span>
+          <button class="btn pa" style="font-size:var(--fs-sm)" onclick="event.stopPropagation();openModal('modal-pa')">設定</button>
+          <button class="btn pa" id="pa-send-btn" ${hasPAUrl?'':'disabled'} onclick="event.stopPropagation();sendPA('${survey.id}')">📤 發送提醒</button>
+        </div>
+      </div>
+      <div class="pa-body hidden" id="pa-body">
+        <div class="pa-hint">按下「發送提醒」後，PA 流程會收到含未交名單的 JSON，可接「傳送 Teams 訊息」或「傳送電子郵件」動作。</div>
+        <div id="pa-result"></div>
+      </div>
+    </div>
+
+    <div class="files-legend"><span class="files-legend-label">需繳檔案：</span>${filePills}</div>
+
+    <div class="filter-bar">
+      <button class="filter-btn ${activeFilter==='all'?'active':''}" onclick="setFilter('all')">全部 (${survey.members.length})</button>
+      <button class="filter-btn ${activeFilter==='undone'?'active':''}" onclick="setFilter('undone')">未交 (${st.undone})</button>
+      <button class="filter-btn ${activeFilter==='partial'?'active':''}" onclick="setFilter('partial')">部分 (${st.partial})</button>
+      <button class="filter-btn ${activeFilter==='done'?'active':''}" onclick="setFilter('done')">已完成 (${st.fullDone})</button>
+      <div class="filter-spacer"></div>
+      <input class="search-box" placeholder="搜尋區名/姓名…" value="${searchQ}" oninput="setSearch(this.value)">
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-head" style="grid-template-columns:${gridTpl}">
+        <div class="th">區 / 區經理</div>
+        <div class="th">員工編號</div>
+        ${survey.files.map(f=>`<div class="th">${f}</div>`).join('')}
+        <div class="th">備註</div>
+        <div class="th">狀態</div>
+      </div>
+      ${rowsHtml||'<div style="padding:24px;text-align:center;color:var(--muted);font-size:var(--fs-base)">沒有符合條件的項目</div>'}
+    </div>`;
+}
+
+function toggleCheck(sid,mid,fi){
+  const s=getSurvey(sid);
+  setCheck(s,mid,fi,!getCheck(s,mid,fi));
+  renderSurveyView(); renderSidebar();
+}
+function noteChange(sid,mid,v){ setNote(getSurvey(sid),mid,v); }
+function setFilter(f){ activeFilter=f; renderSurveyView(); }
+function setSearch(v){ searchQ=v; renderSurveyView(); }
+function togglePA(){ document.getElementById('pa-body').classList.toggle('hidden'); }
+
+// ── Power Automate ──
+function openModal_pa(){ openModal('modal-pa'); }
+function savePAUrl(){
+  prefs.paUrl=document.getElementById('pa-url-input').value.trim();
+  savePrefs();
+  closeModal('modal-pa');
+  renderSurveyView();
+}
+function clearPAUrl(){
+  if(!confirm('確定清除 Webhook URL？')) return;
+  prefs.paUrl=''; savePrefs();
+  closeModal('modal-pa');
+  renderSurveyView();
+}
+
+async function sendPA(surveyId){
+  if(!prefs.paUrl){ alert('請先設定 Power Automate Webhook URL'); return; }
+  const survey=getSurvey(surveyId);
+  const st=surveyStats(survey);
+  const nF=survey.files.length;
+  const now=new Date();
+  const sentAt=`${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+  const undoneList=survey.members
+    .map(m=>{
+      const missing=survey.files.filter((_,fi)=>!getCheck(survey,m.id,fi));
+      return missing.length?{ type:m.type||'', district:m.district, manager:m.manager, emp_id:m.emp_id||'', missing }:null;
+    }).filter(Boolean);
+
+  // Build LINE-style message
+  let msg=`📚 ${survey.name}\n`;
+  msg+=`統計時間：${sentAt}\n`;
+  msg+=`進度：${st.fullDone}/${st.total} 區全部完成（${Math.round(st.fullDone/st.total*100)}%）\n\n`;
+  const groups={};
+  undoneList.forEach(u=>{ if(!groups[u.type])groups[u.type]=[]; groups[u.type].push(u); });
+  Object.entries(groups).forEach(([tp,items])=>{
+    msg+=`▌${tp}（${items.length} 區未完成）\n`;
+    items.forEach(u=>{
+      const tag=u.missing.length<nF?'⚠️ 漏交':'❌ 未交';
+      msg+=`  ${tag}｜${u.district} ${u.manager} 區經理\n`;
+      if(u.missing.length<nF) msg+=`       缺：${u.missing.join('、')}\n`;
+    });
+    msg+='\n';
+  });
+  msg+=`⏰ 請盡快完成回覆，謝謝！`;
+
+  const payload={ surveyName:survey.name, sentAt, totalCount:st.total, doneCount:st.fullDone, undoneCount:st.undone, undoneList, message:msg };
+
+  const btn=document.getElementById('pa-send-btn');
+  const resultEl=document.getElementById('pa-result');
+  btn.disabled=true; btn.textContent='發送中…';
+  document.getElementById('pa-body').classList.remove('hidden');
+  if(resultEl) resultEl.innerHTML=`<span class="pa-status sending">⏳ 傳送中…</span>`;
+
+  try {
+    const res=await fetch(prefs.paUrl,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+    if(res.ok||res.status===202){
+      if(resultEl) resultEl.innerHTML=`<span class="pa-status ok">✓ 已成功發送到 Power Automate（${sentAt}）</span>`;
+    } else {
+      if(resultEl) resultEl.innerHTML=`<span class="pa-status err">✗ 發送失敗 HTTP ${res.status}，請確認 Webhook URL</span>`;
+    }
+  } catch(e){
+    // CORS error is normal when PA returns 200 — treat as success
+    if(resultEl) resultEl.innerHTML=`<span class="pa-status ok">✓ 已發送（若未收到通知請確認 PA 流程設定）</span>`;
+  }
+  btn.disabled=false; btn.textContent='📤 發送提醒';
+}
+
+// ── Survey modal ──
+function openNewSurvey(){ editSurveyId=null; modalMembers=[]; modalFiles=['']; selectedTpls=new Set(); document.getElementById('f-name').value=''; document.getElementById('modal-survey-title').textContent='新增調查活動'; document.getElementById('modal-delete-btn').style.display='none'; renderTplGrid(); renderMembersPreview(); renderFilesInput(); openModal('modal-survey'); }
+function openEditSurvey(id){ const s=getSurvey(id); editSurveyId=id; modalMembers=s.members.map(m=>({...m})); modalFiles=[...s.files]; selectedTpls=new Set(); document.getElementById('f-name').value=s.name; document.getElementById('modal-survey-title').textContent='編輯調查活動'; document.getElementById('modal-delete-btn').style.display='inline-flex'; renderTplGrid(); renderMembersPreview(); renderFilesInput(); openModal('modal-survey'); }
+
+function renderTplGrid(){ document.getElementById('tpl-grid').innerHTML=Object.entries(TEMPLATES).map(([k,t])=>`<button class="tpl-btn ${selectedTpls.has(k)?'selected':''}" onclick="applyTemplate('${k}')"><strong>${t.name}</strong><span>${t.desc}</span></button>`).join(''); }
+function applyTemplate(k){ TEMPLATES[k].members.forEach(m=>{ if(!modalMembers.find(x=>x.district===m.district&&x.type===m.type)) modalMembers.push({...m,id:uid()}); }); selectedTpls.add(k); renderTplGrid(); renderMembersPreview(); }
+function renderMembersPreview(){ const el=document.getElementById('members-preview'); if(!modalMembers.length){ el.innerHTML='<div style="padding:12px;text-align:center;color:var(--muted);font-size:var(--fs-sm)">尚無成員</div>'; return; } el.innerHTML=modalMembers.map((m,i)=>`<div class="member-item"><div class="member-item-info"><b>${m.type?m.type+' ':''}${m.district}　${m.manager}</b><small>${m.emp_id||''}</small></div><button class="member-del" onclick="removeMember(${i})">✕</button></div>`).join(''); }
+function removeMember(i){ modalMembers.splice(i,1); renderMembersPreview(); }
+function addMember(){ const d=document.getElementById('add-district').value.trim(),tp=document.getElementById('add-type').value.trim(),mg=document.getElementById('add-manager').value.trim(),eid=document.getElementById('add-empid').value.trim(); if(!d||!mg){alert('請填入區名與區經理姓名');return;} modalMembers.push({id:uid(),district:d,type:tp,manager:mg,emp_id:eid}); document.getElementById('add-district').value=''; document.getElementById('add-manager').value=''; document.getElementById('add-empid').value=''; renderMembersPreview(); }
+function renderFilesInput(){ document.getElementById('files-input-list').innerHTML=modalFiles.map((f,i)=>`<div class="file-input-row"><input class="form-input" placeholder="檔案名稱" value="${f}" oninput="modalFiles[${i}]=this.value"><button class="file-del" onclick="removeFileInput(${i})">✕</button></div>`).join(''); }
+function addFileInput(){ modalFiles.push(''); renderFilesInput(); }
+function removeFileInput(i){ modalFiles.splice(i,1); renderFilesInput(); }
+
+function saveSurvey(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){alert('請填入活動名稱');return;}
+  const files=modalFiles.map(f=>f.trim()).filter(Boolean);
+  if(!files.length){alert('請至少填入一個檔案名稱');return;}
+  if(!modalMembers.length){alert('請至少新增一個追蹤對象');return;}
+  modalMembers.forEach(m=>{if(!m.id)m.id=uid();});
+  if(editSurveyId){
+    const s=getSurvey(editSurveyId);
+    s.name=name; s.files=files;
+    const newIds=new Set(modalMembers.map(m=>m.id));
+    if(s.checks) Object.keys(s.checks).forEach(k=>{if(!newIds.has(k.split('_')[0]))delete s.checks[k];});
+    s.members=modalMembers;
+  } else {
+    db.surveys.unshift({id:uid(),name,files,members:modalMembers,checks:{},notes:{},created:Date.now()});
+    activeSurveyId=db.surveys[0].id;
+  }
+  saveDB(); closeModal('modal-survey'); renderSidebar(); renderSurveyView();
+}
+
+function deleteSurvey(){
+  if(!confirm(`確定刪除「${getSurvey(editSurveyId).name}」？`))return;
+  db.surveys=db.surveys.filter(s=>s.id!==editSurveyId);
+  if(activeSurveyId===editSurveyId) activeSurveyId=db.surveys[0]?.id||null;
+  saveDB(); closeModal('modal-survey'); renderSidebar();
+  if(activeSurveyId) renderSurveyView();
+  else { document.getElementById('empty-state').style.display=''; document.getElementById('survey-view').style.display='none'; }
+}
+
+// ── Export ──
+function buildLineMsg(survey){
+  const st=surveyStats(survey); const nF=survey.files.length;
+  const groups={};
+  survey.members.forEach(m=>{
+    const done=survey.files.filter((_,fi)=>getCheck(survey,m.id,fi)).length;
+    if(done===nF)return;
+    const tp=m.type||'未分類'; if(!groups[tp])groups[tp]=[];
+    const missing=survey.files.filter((_,fi)=>!getCheck(survey,m.id,fi));
+    groups[tp].push({m,done,missing});
+  });
+  let msg=`📚 ${survey.name}\n━━━━━━━━━━━━━━━\n進度：${st.fullDone}/${st.total} 區全部完成（${Math.round(st.fullDone/st.total*100)}%）\n\n`;
+  Object.entries(groups).forEach(([tp,items])=>{
+    msg+=`▌${tp}（${items.length} 區未完成）\n`;
+    items.forEach(({m,done,missing})=>{
+      msg+=`  ${done>0?'⚠️ 漏交':'❌ 未交'}｜${m.district} ${m.manager} 區經理\n`;
+      if(done>0)msg+=`       缺：${missing.join('、')}\n`;
+    });
+    msg+='\n';
+  });
+  return msg+`⏰ 請盡快完成回覆，謝謝！`;
+}
+function exportLine(id){ showExport('💬 LINE 訊息', buildLineMsg(getSurvey(id)), null); }
+function exportCSV(id){
+  const s=getSurvey(id); const nF=s.files.length;
+  const h=['類型','區別','區經理','員工編號',...s.files,'完成狀態','備註'];
+  const rows=s.members.map(m=>{
+    const done=s.files.filter((_,fi)=>getCheck(s,m.id,fi)).length;
+    return [m.type||'',m.district,m.manager,m.emp_id||'',...s.files.map((_,fi)=>getCheck(s,m.id,fi)?'✓':''),done===nF?'完成':done>0?'部分':'未交',getNote(s,m.id)].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',');
+  });
+  showExport('⬇ 匯出 CSV', '\uFEFF'+[h.join(','),...rows].join('\n'), `${getSurvey(id).name}.csv`);
+}
+function exportJSON(){ showExport('💾 備份 JSON', JSON.stringify(db,null,2), `tracker_backup_${Date.now()}.json`); }
+
+let exportFileName=null;
+function showExport(title,content,filename){ exportFileName=filename; document.getElementById('export-title').textContent=title; document.getElementById('export-content').value=content; openModal('modal-export'); }
+function copyExport(){ const el=document.getElementById('export-content'); el.select(); document.execCommand('copy'); const b=event.target; b.textContent='✓ 已複製！'; setTimeout(()=>{b.textContent='複製文字';},1500); }
+function downloadExport(){ const c=document.getElementById('export-content').value; const mime=exportFileName?.endsWith('.csv')?'text/csv;charset=utf-8;':'application/json'; const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([c],{type:mime})); a.download=exportFileName||'export.txt'; a.click(); }
+
+// ── Import ──
+function importData(){ document.getElementById('import-file-input').click(); }
+function handleImport(e){ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=ev=>{ try{ const d=JSON.parse(ev.target.result); if(!d.surveys)throw new Error('格式錯誤'); if(!confirm(`匯入 ${d.surveys.length} 個活動（不覆蓋現有），確定繼續？`))return; d.surveys.forEach(s=>{if(!db.surveys.find(x=>x.id===s.id))db.surveys.push(s);}); saveDB(); renderSidebar(); alert('匯入成功！'); }catch(err){alert('匯入失敗：'+err.message);} }; r.readAsText(f); e.target.value=''; }
+
+// ── Modal ──
+function openModal(id){
+  if(id==='modal-pa') document.getElementById('pa-url-input').value=prefs.paUrl||'';
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.overlay').forEach(el=>{ el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');}); });
+
+// ── Init ──
+loadDB(); loadPrefs(); applyPrefs(); renderSidebar();
+if(db.surveys.length){ activeSurveyId=db.surveys[0].id; renderSurveyView(); }
+</script>
+</body>
+</html>
