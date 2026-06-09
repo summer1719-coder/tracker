@@ -743,10 +743,7 @@ async function sendPA(surveyId){
   }).filter(Boolean);
   const noEmail=undoneList.filter(u=>!u.email);
   if(noEmail.length){if(!confirm(`${noEmail.length} 人未填 Email 將不會收到通知，確定繼續？`))return;}
-  let msg=`📚 ${survey.name}\n統計：${sentAt}\n進度：${st.fullDone}/${st.total} 區完成\n\n`;
-  const groups={};undoneList.forEach(u=>{if(!groups[u.type])groups[u.type]=[];groups[u.type].push(u);});
-  Object.entries(groups).forEach(([tp,items])=>{msg+=`▌${tp}\n`;items.forEach(u=>{msg+=`  ${u.missing.length<nF?'⚠️':'❌'} ${u.district} ${u.manager}\n`;if(u.missing.length<nF)msg+=`     缺：${u.missing.join('、')}\n`;});msg+='\n';});
-  msg+='⏰ 請盡快完成回覆，謝謝！';
+  const msg=buildLineMsg(survey);
   const payload={surveyName:survey.name,sentAt,totalCount:st.total,doneCount:st.fullDone,undoneCount:st.undone,undoneList,message:msg};
   const btn=document.getElementById('pa-send-btn');const res=document.getElementById('pa-result');
   document.getElementById('pa-body')?.classList.remove('hidden');btn.disabled=true;btn.textContent='發送中…';
@@ -811,13 +808,40 @@ function deleteSurvey(){
 }
 
 // ── Export ──
-function exportLine(id){
-  const s=getSurvey(id);const st=surveyStats(s);const nF=s.files.length;
+function buildLineMsg(s){
+  const st=surveyStats(s);const nF=s.files.length;
   const groups={};
-  s.members.filter(m=>!m.retired).forEach(m=>{const done=s.files.filter((_,fi)=>getCheck(s,m.id,fi)).length;if(done===nF)return;const tp=m.type||'未分類';if(!groups[tp])groups[tp]=[];groups[tp].push({m,done,missing:s.files.filter((_,fi)=>!getCheck(s,m.id,fi))});});
-  let msg=`📚 ${s.name}\n━━━━━━━━━━━━━━━\n進度：${st.fullDone}/${st.total} 區全部完成（${Math.round(st.fullDone/st.total*100)}%）\n\n`;
-  Object.entries(groups).forEach(([tp,items])=>{msg+=`▌${tp}（${items.length} 區未完成）\n`;items.forEach(({m,done,missing})=>{msg+=`  ${done>0?'⚠️ 漏交':'❌ 未交'}｜${m.district} ${m.manager} 區經理\n`;if(done>0)msg+=`       缺：${missing.join('、')}\n`;});msg+='\n';});
-  msg+='⏰ 請盡快完成回覆，謝謝！';showExport('💬 LINE 訊息',msg,null);
+  s.members.filter(m=>!m.retired).forEach(m=>{
+    const done=s.files.filter((_,fi)=>getCheck(s,m.id,fi)).length;
+    if(done===nF)return;
+    const tp=m.type||'未分類';
+    if(!groups[tp])groups[tp]=[];
+    groups[tp].push({m,done,missing:s.files.filter((_,fi)=>!getCheck(s,m.id,fi))});
+  });
+  // 格式設計：每筆控制在手機一行內不斷句
+  // ❌ 北二區　鄧克強
+  // ⚠️ 北三區　孫丕榮（缺：OO表）
+  let msg=`📚 ${s.name}\n`;
+  msg+=`進度 ${st.fullDone}／${st.total} 完成\n`;
+  msg+=`─────────────────\n`;
+  Object.entries(groups).forEach(([tp,items])=>{
+    msg+=`\n【${tp}】${items.length}區未完成\n`;
+    items.forEach(({m,done,missing})=>{
+      if(done===0){
+        msg+=`❌ ${m.district}　${m.manager} 區經理\n`;
+      } else {
+        msg+=`⚠️ ${m.district}　${m.manager} 區經理\n`;
+        msg+=`　　缺：${missing.join('、')}\n`;
+      }
+    });
+  });
+  msg+=`─────────────────\n`;
+  msg+=`⏰ 請盡快回覆，謝謝！`;
+  return msg;
+}
+function exportLine(id){
+  const s=getSurvey(id);
+  showExport('💬 LINE 訊息',buildLineMsg(s),null);
 }
 function exportCSV(id){
   const s=getSurvey(id);const nF=s.files.length;
