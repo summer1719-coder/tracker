@@ -540,7 +540,7 @@ body{font-family:var(--sans);font-size:var(--fs-base);background:var(--bg);color
 // ── State ──
 const STORE='tracker_v5',PREFS='tracker_prefs_v5';
 let db={surveys:[]};
-let prefs={theme:'dark',fontSize:14,paUrl:''};
+let prefs={theme:'dark',fontSize:14,paUrl:'',testEmail:''};
 let activeSurveyId=null,editSurveyId=null;
 let modalMembers=[],modalFiles=[],selectedTpls=new Set();
 let activeFilter='all',searchQ='';
@@ -709,6 +709,22 @@ function renderSurveyView(){
               </div>
             </div>
           </div>
+        </div>
+        <!-- 測試發送區 -->
+        <div style="margin-top:14px;padding:14px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px">
+          <div style="font-size:var(--fs-sm);font-weight:600;color:var(--muted2);margin-bottom:10px;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase">🧪 測試發送</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <input class="email-tpl-input" id="pa-test-email"
+              placeholder="輸入你的 Email，測試信發到這裡"
+              value="${escHtml(prefs.testEmail||'')}"
+              oninput="prefs.testEmail=this.value;savePrefs()"
+              style="flex:1;min-width:220px">
+            <button class="btn pa" onclick="sendTestPA('${survey.id}')" style="white-space:nowrap">📨 發測試信</button>
+          </div>
+          <div style="margin-top:8px;font-size:var(--fs-sm);color:var(--muted);line-height:1.6">
+            會用<strong style="color:var(--text)">第一位未交成員</strong>的資料套入主旨和內文，寄到上方 Email，讓你確認格式正確。
+          </div>
+          <div id="pa-test-result" style="margin-top:8px"></div>
         </div>
         <div id="pa-result"></div>
       </div>
@@ -934,6 +950,68 @@ function insertVar(fieldId, varStr){
   // trigger save
   const sid=activeSurveyId;
   if(fieldId==='pa-body-text') saveSurveyEmail(sid,'emailBody',el.value);
+}
+
+
+async function sendTestPA(surveyId){
+  if(!prefs.paUrl){ alert('請先設定 Webhook URL'); return; }
+  const testEmail=(prefs.testEmail||'').trim();
+  if(!testEmail){ alert('請先填入測試收件 Email'); document.getElementById('pa-test-email')?.focus(); return; }
+
+  const survey=getSurvey(surveyId);
+  const nF=survey.files.length;
+  const now=new Date();
+  const sentAt=`${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+  // Pick first undone member as sample; if all done, use first member
+  const undone=survey.members.filter(m=>!m.retired&&survey.files.some((_,fi)=>!getCheck(survey,m.id,fi)));
+  const sample=undone[0]||survey.members.filter(m=>!m.retired)[0];
+  if(!sample){ alert('此活動尚無成員'); return; }
+
+  const missingFiles=survey.files.filter((_,fi)=>!getCheck(survey,sample.id,fi));
+  const missingStr=missingFiles.length?missingFiles.join('、'):'（範例檔案）';
+
+  const replace=(tpl)=>(tpl||'')
+    .replace(/{{姓名}}/g, sample.manager||sample.name||'測試姓名')
+    .replace(/{{單位}}/g, sample.type||sample.unit||'測試單位')
+    .replace(/{{缺交檔案}}/g, missingStr)
+    .replace(/{{活動名稱}}/g, survey.name)
+    .replace(/{{日期}}/g, sentAt.split(' ')[0]);
+
+  const subjectPreviewed=replace(survey.emailSubject||'（主旨未設定）');
+  const bodyPreviewed=replace(survey.emailBody||'（內文未設定）');
+
+  // Build test payload — isTest flag so PA can handle differently if needed
+  const payload={
+    surveyName:survey.name, sentAt, isTest:true,
+    totalCount:1, doneCount:0, undoneCount:1,
+    undoneList:[{
+      type:sample.type||'', district:sample.district||sample.name||'',
+      manager:sample.manager||sample.name||'', emp_id:sample.emp_id||'',
+      email:testEmail,   // 強制發到測試信箱
+      missing:missingFiles,
+      emailSubject:subjectPreviewed,
+      emailBody:bodyPreviewed,
+    }],
+    message:`[測試] ${survey.name}\n主旨：${subjectPreviewed}\n---\n${bodyPreviewed}`,
+    emailSubjectTemplate:survey.emailSubject||'',
+    emailBodyTemplate:survey.emailBody||'',
+  };
+
+  const btn=event.currentTarget;
+  const res=document.getElementById('pa-test-result');
+  btn.disabled=true; btn.textContent='發送中…';
+  if(res) res.innerHTML=`<span class="pa-status sending">⏳ 測試信發送中，收件：${testEmail}…</span>`;
+
+  try{
+    const r=await fetch(prefs.paUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(res) res.innerHTML=r.ok||r.status===202
+      ? `<span class="pa-status ok">✓ 測試信已送出！請至 ${testEmail} 確認收信</span>`
+      : `<span class="pa-status err">✗ HTTP ${r.status}，請確認 Webhook URL</span>`;
+  }catch(e){
+    if(res) res.innerHTML=`<span class="pa-status ok">✓ 已送出（若未收信請確認 PA 流程是否正常）</span>`;
+  }
+  btn.disabled=false; btn.textContent='📨 發測試信';
 }
 
 async function sendPA(surveyId){
