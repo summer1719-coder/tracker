@@ -7,8 +7,8 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
 :root{--fs-base:14px;--fs-sm:11px;--fs-lg:16px;--fs-xl:20px;--sans:'Noto Sans TC',sans-serif;--mono:'IBM Plex Mono',monospace;--radius:10px;}
-[data-theme="dark"]{--bg:#0f1117;--surface:#181c27;--surface2:#1e2333;--border:#2a3045;--border2:#323952;--text:#e8eaf0;--muted:#6b7494;--muted2:#8892b0;--green:#3ddc84;--green-dim:rgba(61,220,132,.13);--red:#ff6b6b;--red-dim:rgba(255,107,107,.13);--yellow:#ffc857;--yellow-dim:rgba(255,200,87,.11);--blue:#64b5f6;--blue-dim:rgba(100,181,246,.11);--accent:#7c8cf8;--accent-dim:rgba(124,140,248,.13);--shadow:0 4px 24px rgba(0,0,0,.4);}
-[data-theme="light"]{--bg:#f0ede6;--surface:#faf8f4;--surface2:#f0ede6;--border:#ddd8cc;--border2:#c8c2b4;--text:#1e1c18;--muted:#7a7264;--muted2:#5a5448;--green:#1a7a45;--green-dim:rgba(26,122,69,.1);--red:#c0392b;--red-dim:rgba(192,57,43,.1);--yellow:#c87800;--yellow-dim:rgba(200,120,0,.1);--blue:#1565c0;--blue-dim:rgba(21,101,192,.1);--accent:#4a5bd4;--accent-dim:rgba(74,91,212,.1);--shadow:0 2px 16px rgba(0,0,0,.1);}
+html[data-theme="dark"],body[data-theme="dark"]{--bg:#0f1117;--surface:#181c27;--surface2:#1e2333;--border:#2a3045;--border2:#323952;--text:#e8eaf0;--muted:#6b7494;--muted2:#8892b0;--green:#3ddc84;--green-dim:rgba(61,220,132,.13);--red:#ff6b6b;--red-dim:rgba(255,107,107,.13);--yellow:#ffc857;--yellow-dim:rgba(255,200,87,.11);--blue:#64b5f6;--blue-dim:rgba(100,181,246,.11);--accent:#7c8cf8;--accent-dim:rgba(124,140,248,.13);--shadow:0 4px 24px rgba(0,0,0,.4);}
+html[data-theme="light"],body[data-theme="light"]{--bg:#f0ede6;--surface:#faf8f4;--surface2:#f0ede6;--border:#ddd8cc;--border2:#c8c2b4;--text:#1e1c18;--muted:#7a7264;--muted2:#5a5448;--green:#1a7a45;--green-dim:rgba(26,122,69,.1);--red:#c0392b;--red-dim:rgba(192,57,43,.1);--yellow:#c87800;--yellow-dim:rgba(200,120,0,.1);--blue:#1565c0;--blue-dim:rgba(21,101,192,.1);--accent:#4a5bd4;--accent-dim:rgba(74,91,212,.1);--shadow:0 2px 16px rgba(0,0,0,.1);}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:var(--sans);font-size:var(--fs-base);background:var(--bg);color:var(--text);min-height:100vh;transition:background .25s,color .25s;}
 .app{display:grid;grid-template-columns:272px 1fr;min-height:100vh;}
@@ -194,9 +194,51 @@ body{font-family:var(--sans);font-size:var(--fs-base);background:var(--bg);color
 ::-webkit-scrollbar{width:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
+
+
+
+/* ── Email template editor ── */
+.email-tpl-wrap{margin-top:12px;border-top:1px solid var(--border);padding-top:12px;display:flex;flex-direction:column;gap:8px;}
+.email-tpl-wrap .tpl-label{font-size:var(--fs-sm);font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted2);margin-bottom:2px;}
+.email-tpl-input{width:100%;padding:8px 10px;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;font-family:var(--sans);font-size:var(--fs-sm);color:var(--text);transition:border-color .15s;}
+.email-tpl-input:focus{outline:none;border-color:var(--blue);}
+.email-tpl-textarea{width:100%;min-height:100px;resize:vertical;padding:8px 10px;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;font-family:var(--sans);font-size:var(--fs-sm);color:var(--text);line-height:1.7;transition:border-color .15s;}
+.email-tpl-textarea:focus{outline:none;border-color:var(--blue);}
+.tpl-var-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+.tpl-var-chip{padding:2px 8px;border-radius:4px;font-family:var(--mono);font-size:calc(var(--fs-sm) - 1px);background:var(--surface2);border:1px solid var(--border2);color:var(--muted2);cursor:pointer;transition:all .15s;}
+.tpl-var-chip:hover{border-color:var(--blue);color:var(--blue);}
+.pa-warn-banner{background:var(--yellow-dim);border:1px solid var(--yellow);border-radius:8px;padding:10px 14px;font-size:var(--fs-sm);color:var(--yellow);display:flex;align-items:center;gap:8px;}
+
+/* ── Group Manager ── */
+#modal-group-manager .modal { padding: 0; }
+.gm-member-row { cursor: pointer; }
+.gm-member-row:hover { background: var(--surface2) !important; }
+
+/* ── Template Manager ── */
+.tpl-manager-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;max-height:320px;overflow-y:auto;}
+.tpl-card{background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.tpl-card-info{flex:1;min-width:0;}
+.tpl-card-name{font-weight:700;font-size:var(--fs-base);}
+.tpl-card-meta{font-size:calc(var(--fs-sm) - 1px);color:var(--muted);font-family:var(--mono);margin-top:2px;}
+.tpl-card-actions{display:flex;gap:6px;flex-shrink:0;}
+.tpl-edit-form{border:1px solid var(--accent);border-radius:10px;padding:14px;margin-bottom:12px;background:var(--accent-dim);}
+.tpl-edit-form .form-label{color:var(--accent);}
 </style>
+<script>
+(function(){
+  try{
+    var p=JSON.parse(localStorage.getItem('tracker_prefs_v5')||'{}');
+    var t=p.theme||'dark';
+    document.documentElement.setAttribute('data-theme',t);
+    document.documentElement.style.setProperty('--fs-base',(p.fontSize||14)+'px');
+    document.documentElement.style.setProperty('--fs-sm',Math.max(9,(p.fontSize||14)-3)+'px');
+    document.documentElement.style.setProperty('--fs-lg',((p.fontSize||14)+2)+'px');
+    document.documentElement.style.setProperty('--fs-xl',((p.fontSize||14)+6)+'px');
+  }catch(e){document.documentElement.setAttribute('data-theme','dark');}
+})();
+</script>
 </head>
-<body data-theme="dark">
+<body>
 <div class="app">
   <aside class="sidebar">
     <div class="sidebar-top">
@@ -221,6 +263,7 @@ body{font-family:var(--sans);font-size:var(--fs-base);background:var(--bg);color
       <button class="btn-new" onclick="openNewSurvey()">＋ 新增調查活動</button>
     </div>
     <div class="sidebar-bottom">
+      <button class="btn accent" style="width:100%;justify-content:center" onclick="openGroupManager()">👥 群組管理</button>
       <button class="btn" style="width:100%;justify-content:center" onclick="exportJSON()">💾 備份 JSON</button>
       <button class="btn" style="width:100%;justify-content:center" onclick="triggerImportBackup()">⬆ 匯入備份</button>
     </div>
@@ -366,42 +409,133 @@ body{font-family:var(--sans);font-size:var(--fs-base);background:var(--bg);color
 </div>
 
 <!-- hidden inputs -->
+
+<!-- Group Manager Modal -->
+<div class="overlay" id="modal-group-manager">
+<div class="modal" style="max-width:720px;padding:0;overflow:hidden;display:flex;flex-direction:column;height:88vh">
+
+  <!-- Header -->
+  <div style="padding:18px 24px 0;border-bottom:1px solid var(--border);flex-shrink:0">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <h3 style="margin:0" id="gm-title">👥 群組管理</h3>
+      <button class="btn" onclick="closeModal('modal-group-manager')">關閉</button>
+    </div>
+    <div style="display:flex;gap:0;border-bottom:none" id="gm-breadcrumb">
+      <button class="filter-btn active" id="gm-tab-list" onclick="gmShowList()">所有群組</button>
+      <button class="filter-btn" id="gm-tab-edit" style="display:none" onclick="gmShowEdit()">✏️ <span id="gm-tab-edit-label">群組</span></button>
+      <button class="filter-btn" id="gm-tab-import" style="display:none">⬆ <span id="gm-tab-import-label">匯入名單</span></button>
+      <button class="filter-btn" id="gm-tab-member" style="display:none">👤 <span id="gm-tab-member-label">編輯成員</span></button>
+    </div>
+  </div>
+
+  <!-- ① 所有群組 -->
+  <div id="gm-panel-list" style="flex:1;overflow-y:auto;padding:16px 24px">
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+      <button class="btn accent" onclick="gmNewGroup()">＋ 新增群組</button>
+      <button class="btn" onclick="exportGroupsJSON()">💾 備份群組</button>
+      <button class="btn" onclick="document.getElementById('tpl-backup-input').click()">⬆ 還原備份</button>
+    </div>
+    <div id="gm-group-list"></div>
+  </div>
+
+  <!-- ② 編輯群組（名稱 + 成員列表） -->
+  <div id="gm-panel-edit" style="flex:1;overflow-y:auto;padding:16px 24px;display:none">
+    <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:14px;flex-wrap:wrap">
+      <div style="flex:1;min-width:180px">
+        <label class="form-label">群組名稱</label>
+        <input class="form-input" id="gm-group-name" placeholder="例：國小區經理、文編部門" style="margin-top:4px">
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+      <span style="font-size:var(--fs-sm);color:var(--muted)" id="gm-member-count">0 位成員</span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn accent" onclick="gmAddMemberMode()">＋ 手動新增</button>
+        <button class="btn pa" onclick="gmShowImport()">⬆ 從 CSV/Excel 匯入</button>
+        <button class="btn" onclick="exportGroupCSV()">⬇ 匯出 CSV</button>
+      </div>
+    </div>
+    <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden" id="gm-member-table"></div>
+    <div style="display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);flex-wrap:wrap">
+      <button class="btn red" id="gm-delete-group-btn" style="margin-right:auto;display:none" onclick="gmDeleteGroup()">🗑 刪除此群組</button>
+      <button class="btn" onclick="gmShowList()">← 返回</button>
+      <button class="btn accent" onclick="gmSaveGroup()">儲存群組</button>
+    </div>
+  </div>
+
+  <!-- ③ 匯入名單（在群組內，可勾選） -->
+  <div id="gm-panel-import" style="flex:1;overflow-y:auto;padding:16px 24px;display:none">
+
+    <!-- Step A: 拖曳上傳 -->
+    <div id="gm-import-step-a">
+      <div class="import-drop-zone" id="gm-drop-zone"
+        onclick="document.getElementById('gm-file-input').click()"
+        ondragover="event.preventDefault();this.classList.add('drag')"
+        ondragleave="this.classList.remove('drag')"
+        ondrop="gmHandleFileDrop(event)">
+        <div class="drop-icon">📂</div>
+        <p><strong>點擊選擇</strong>或拖曳檔案</p>
+        <p>支援 <code>.csv</code>（UTF-8）或 <code>.xlsx / .xls</code></p>
+        <p style="margin-top:6px">欄位順序：<code>單位, 名稱, 姓名, 員工編號, Email, 職稱</code></p>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+        <span style="font-size:var(--fs-sm);color:var(--muted)">沒有現成檔案？</span>
+        <button class="btn" onclick="downloadMemberTemplate()">⬇ 下載 CSV 範本</button>
+      </div>
+    </div>
+
+    <!-- Step B: 勾選預覽 -->
+    <div id="gm-import-step-b" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+        <span style="font-size:var(--fs-sm);color:var(--muted)" id="gm-import-file-name"></span>
+        <button class="btn" onclick="gmImportReset()">↩ 重新選檔</button>
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+          <input class="search-box" id="gm-import-search" placeholder="篩選姓名/單位…" oninput="gmImportFilter(this.value)" style="width:160px">
+          <span style="font-size:var(--fs-sm);font-family:var(--mono);color:var(--muted)" id="gm-import-sel-count"></span>
+        </div>
+      </div>
+      <!-- Select all bar -->
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px 8px 0 0;padding:8px 14px;display:flex;align-items:center;gap:10px">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:var(--fs-sm);font-weight:600">
+          <input type="checkbox" id="gm-select-all" onchange="gmToggleAll(this.checked)" style="accent-color:var(--accent)">
+          全選 / 全不選
+        </label>
+        <span style="font-size:var(--fs-sm);color:var(--muted)" id="gm-import-total-hint"></span>
+      </div>
+      <div style="border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;max-height:360px;overflow-y:auto" id="gm-import-list"></div>
+      <div style="display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+        <button class="btn" onclick="gmShowEdit()">← 返回群組</button>
+        <button class="btn accent" style="margin-left:auto" onclick="gmConfirmImport()">✓ 加入已勾選的人</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 新增/編輯單一成員 -->
+  <div id="gm-panel-member" style="flex:1;overflow-y:auto;padding:16px 24px;display:none">
+    <h4 style="margin-bottom:16px" id="gm-member-panel-title">新增成員</h4>
+    <div class="add-member-grid">
+      <input class="form-input" id="gm-m-name" placeholder="姓名（必填）">
+      <input class="form-input" id="gm-m-unit" placeholder="單位／標籤（選填）">
+      <input class="form-input" id="gm-m-role" placeholder="職稱（選填，如：區經理）">
+      <input class="form-input" id="gm-m-empid" placeholder="員工編號">
+      <input class="form-input span2" id="gm-m-email" placeholder="Email（PA 發信用）">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+      <button class="btn red" id="gm-member-delete-btn" style="display:none;margin-right:auto" onclick="gmDeleteMember()">刪除成員</button>
+      <button class="btn" onclick="gmShowEdit()">← 返回</button>
+      <button class="btn accent" onclick="gmSaveMember()">儲存成員</button>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<input type="file" id="gm-file-input" accept=".csv,.xlsx,.xls" style="display:none" onchange="gmHandleFileSelect(event)">
+<input type="file" id="tpl-file-input" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleTplFileSelect(event)">
+<input type="file" id="tpl-backup-input" accept=".json" style="display:none" onchange="handleTplBackupImport(event)">
 <input type="file" id="member-file-input" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleMemberFileSelect(event)">
 <input type="file" id="backup-file-input" accept=".json" style="display:none" onchange="handleImportBackup(event)">
 
 <script>
-// ── Templates ──
-const TEMPLATES={
-  elem:{name:'國小區經理',desc:'13 區',members:[
-    {type:'國小',district:'北一區',manager:'陳清樺',emp_id:'1040911',email:''},
-    {type:'國小',district:'北二區',manager:'鄧克強',emp_id:'920233',email:''},
-    {type:'國小',district:'北三區',manager:'孫丕榮',emp_id:'1070801',email:''},
-    {type:'國小',district:'桃園區',manager:'王凡昇',emp_id:'970903',email:''},
-    {type:'國小',district:'桃竹區',manager:'高筠茹',emp_id:'1080823',email:''},
-    {type:'國小',district:'語北桃(台北)',manager:'陳健政',emp_id:'891213',email:''},
-    {type:'國小',district:'中一區',manager:'張怡斌',emp_id:'980710',email:''},
-    {type:'國小',district:'中二區',manager:'葉柏宏',emp_id:'961206',email:''},
-    {type:'國小',district:'雲嘉區',manager:'馬育民',emp_id:'961110',email:''},
-    {type:'國小',district:'台南區',manager:'楊堡弘',emp_id:'1000826',email:''},
-    {type:'國小',district:'高一區',manager:'劉豐明',emp_id:'891209',email:''},
-    {type:'國小',district:'高二區',manager:'洪清裕',emp_id:'971013',email:''},
-    {type:'國小',district:'語教中南(台中)',manager:'彭國斌',emp_id:'961003',email:''},
-  ]},
-  jhs:{name:'國中區經理',desc:'11 區',members:[
-    {type:'國中',district:'北一區',manager:'顏程回',emp_id:'950907',email:''},
-    {type:'國中',district:'北二區',manager:'周士貽',emp_id:'1110915',email:''},
-    {type:'國中',district:'北三區',manager:'陳品豪',emp_id:'1030958',email:''},
-    {type:'國中',district:'北四區',manager:'楊正良',emp_id:'981008',email:''},
-    {type:'國中',district:'桃園區',manager:'陳芯玲',emp_id:'990108',email:''},
-    {type:'國中',district:'桃竹區',manager:'陳興',emp_id:'1020808',email:''},
-    {type:'國中',district:'中一區',manager:'岳君豪',emp_id:'1000805',email:''},
-    {type:'國中',district:'中二區',manager:'詹明鑫',emp_id:'930412',email:''},
-    {type:'國中',district:'台南區',manager:'楊哲寬',emp_id:'911038',email:''},
-    {type:'國中',district:'高一區',manager:'黃一訓',emp_id:'1020912',email:''},
-    {type:'國中',district:'高二區',manager:'洪瑞源',emp_id:'880920',email:''},
-  ]},
-};
-TEMPLATES.both={name:'國小＋國中',desc:'24 區',members:[...TEMPLATES.elem.members,...TEMPLATES.jhs.members]};
 
 // ── State ──
 const STORE='tracker_v5',PREFS='tracker_prefs_v5';
@@ -435,18 +569,24 @@ function surveyStats(survey){
 
 // ── Theme ──
 function applyPrefs(){
-  document.body.setAttribute('data-theme',prefs.theme);
-  document.documentElement.style.setProperty('--fs-base',prefs.fontSize+'px');
-  document.documentElement.style.setProperty('--fs-sm',(prefs.fontSize-3)+'px');
-  document.documentElement.style.setProperty('--fs-lg',(prefs.fontSize+2)+'px');
-  document.documentElement.style.setProperty('--fs-xl',(prefs.fontSize+6)+'px');
-  const dark=prefs.theme==='dark';
-  const track=document.getElementById('theme-track');
-  if(track){track.className='toggle-track'+(dark?' on':'');}
-  const label=document.getElementById('theme-label');
-  if(label)label.textContent=dark?'🌙 深色':'☀️ 淺色';
-  const disp=document.getElementById('fs-display');
-  if(disp)disp.textContent=prefs.fontSize;
+  // Theme: set on <html> so [data-theme] CSS vars work correctly
+  document.documentElement.setAttribute('data-theme', prefs.theme);
+  document.body.setAttribute('data-theme', prefs.theme);
+  // Font size: set CSS vars on :root via documentElement
+  const fs = prefs.fontSize;
+  const root = document.documentElement;
+  root.style.setProperty('--fs-base', fs + 'px');
+  root.style.setProperty('--fs-sm',   Math.max(9, fs - 3) + 'px');
+  root.style.setProperty('--fs-lg',   (fs + 2) + 'px');
+  root.style.setProperty('--fs-xl',   (fs + 6) + 'px');
+  // Update toggle UI
+  const dark = prefs.theme === 'dark';
+  const track = document.getElementById('theme-track');
+  if(track) track.className = 'toggle-track' + (dark ? ' on' : '');
+  const label = document.getElementById('theme-label');
+  if(label) label.textContent = dark ? '🌙 深色' : '☀️ 淺色';
+  const disp = document.getElementById('fs-display');
+  if(disp) disp.textContent = fs;
 }
 function toggleTheme(){prefs.theme=prefs.theme==='dark'?'light':'dark';savePrefs();applyPrefs();}
 function changeFontSize(d){prefs.fontSize=Math.max(12,Math.min(22,prefs.fontSize+d));savePrefs();applyPrefs();}
@@ -472,7 +612,10 @@ function renderSurveyView(){
   const gridTpl=`190px 160px ${survey.files.map(()=>'1fr').join(' ')} 1fr 80px`;
 
   let members=[...survey.members];
-  if(searchQ){const q=searchQ.toLowerCase();members=members.filter(m=>m.district.includes(q)||m.manager.includes(q)||(m.type||'').includes(q)||(m.email||'').includes(q));}
+  if(searchQ){
+    const q=searchQ.toLowerCase();
+    members=members.filter(m=>[m.district,m.manager,m.name,m.type,m.unit,m.role,m.emp_id,m.email].some(v=>v&&String(v).toLowerCase().includes(q)));
+  }
   if(activeFilter==='undone')members=members.filter(m=>survey.files.filter((_,fi)=>getCheck(survey,m.id,fi)).length<nF);
   else if(activeFilter==='partial')members=members.filter(m=>{const d=survey.files.filter((_,fi)=>getCheck(survey,m.id,fi)).length;return d>0&&d<nF;});
   else if(activeFilter==='done')members=members.filter(m=>survey.files.every((_,fi)=>getCheck(survey,m.id,fi)));
@@ -505,6 +648,9 @@ function renderSurveyView(){
 
   const hasPAUrl=!!prefs.paUrl;
   const missingEmail=survey.members.filter(m=>!m.retired&&(!m.email||!m.email.trim())).length;
+  const hasSubject=!!(survey.emailSubject&&survey.emailSubject.trim());
+  const hasBody=!!(survey.emailBody&&survey.emailBody.trim());
+  const emailTplWarn=(!hasSubject||!hasBody)?`<div class="pa-warn-banner">⚠️ ${!hasSubject&&!hasBody?'尚未設定信件主旨和內文':!hasSubject?'尚未設定信件主旨':' 尚未設定信件內文'}，發送前請先填寫，否則 PA 收到的內容會是空白</div>`:'';
   const paWarn=missingEmail>0?`<span style="color:var(--yellow);font-size:var(--fs-sm);font-family:var(--mono)">⚠ ${missingEmail} 人未填 Email</span>`:'<span style="color:var(--green);font-size:var(--fs-sm);font-family:var(--mono)">✓ Email 齊全</span>';
 
   document.getElementById('survey-view').innerHTML=`
@@ -539,7 +685,31 @@ function renderSurveyView(){
         </div>
       </div>
       <div class="pa-body hidden" id="pa-body">
-        <div class="pa-hint">按下發送後，PA 會對每位未交的區經理各發 Outlook 信＋Teams 訊息。請確認 Email 欄已填寫。</div>
+        <div class="pa-hint">PA 會對每位未交者各發 Outlook 信＋Teams 訊息，信件內容直接使用下方設定。</div>
+        ${emailTplWarn}
+        <div class="email-tpl-wrap">
+          <div>
+            <div class="tpl-label">📧 信件主旨</div>
+            <input class="email-tpl-input" id="pa-subject"
+              placeholder="例：【提醒】${survey.name} 請盡速繳交"
+              value="${escHtml(survey.emailSubject||'')}"
+              onchange="saveSurveyEmail('${survey.id}','subject',this.value)"
+              onblur="saveSurveyEmail('${survey.id}','subject',this.value)">
+          </div>
+          <div>
+            <div class="tpl-label">📝 信件內文</div>
+            <textarea class="email-tpl-textarea" id="pa-body-text"
+              placeholder="例：親愛的 {{姓名}} 區經理您好，\n\n提醒您尚未繳交 {{缺交檔案}}，請於今日下班前完成，謝謝！"
+              onchange="saveSurveyEmail('${survey.id}','emailBody',this.value)"
+              onblur="saveSurveyEmail('${survey.id}','emailBody',this.value)">${escHtml(survey.emailBody||'')}</textarea>
+            <div style="margin-top:6px">
+              <span style="font-size:var(--fs-sm);color:var(--muted)">可用變數（點擊複製）：</span>
+              <div class="tpl-var-chips">
+                ${['{{姓名}}','{{單位}}','{{缺交檔案}}','{{活動名稱}}','{{日期}}'].map(v=>`<span class="tpl-var-chip" onclick="insertVar('pa-body-text','${v}')">${v}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
         <div id="pa-result"></div>
       </div>
     </div>
@@ -625,7 +795,7 @@ function parseCSV(text){
   for(let i=1;i<lines.length;i++){
     const cols=lines[i].split(',').map(c=>c.replace(/^"|"$/g,'').trim());
     if(cols.length<4)continue;
-    rows.push({type:cols[0]||'',district:cols[1]||'',manager:cols[2]||'',emp_id:cols[3]||'',email:cols[4]||''});
+    rows.push({type:cols[0]||'',district:cols[1]||'',manager:cols[2]||'',emp_id:cols[3]||'',email:cols[4]||'',role:cols[5]||''});
   }
   return rows;
 }
@@ -725,26 +895,91 @@ function confirmImport(){
   alert('✅ 名單已更新完成！');
 }
 
-function downloadMemberTemplate(){
-  const csv='\uFEFF類型,區別,區經理,員工編號,Email\n國小,北一區,陳清樺,1040911,\n國小,北二區,鄧克強,920233,\n國中,北一區,顏程回,950907,\n';
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));a.download='區經理名單範本.csv';a.click();
-}
+
 
 // ── PA ──
 function savePAUrl(){prefs.paUrl=document.getElementById('pa-url-input').value.trim();savePrefs();closeModal('modal-pa');renderSurveyView();}
 function clearPAUrl(){if(!confirm('確定清除？'))return;prefs.paUrl='';savePrefs();closeModal('modal-pa');renderSurveyView();}
+
+function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function saveSurveyEmail(surveyId, field, value){
+  const s=getSurvey(surveyId); if(!s) return;
+  s[field]=value; saveDB();
+  // Update warn banner live
+  const hasSubject=!!(s.emailSubject&&s.emailSubject.trim());
+  const hasBody=!!(s.emailBody&&s.emailBody.trim());
+  const warn=document.querySelector('.pa-warn-banner');
+  if(!hasSubject||!hasBody){
+    const msg=!hasSubject&&!hasBody?'尚未設定信件主旨和內文':!hasSubject?'尚未設定信件主旨':'尚未設定信件內文';
+    if(warn) warn.textContent='⚠️ '+msg+'，發送前請先填寫，否則 PA 收到的內容會是空白';
+    else {
+      const banner=document.createElement('div');
+      banner.className='pa-warn-banner';
+      banner.textContent='⚠️ '+msg+'，發送前請先填寫';
+      document.getElementById('pa-body')?.insertBefore(banner, document.getElementById('pa-result'));
+    }
+  } else {
+    if(warn) warn.remove();
+  }
+}
+
+function insertVar(fieldId, varStr){
+  const el=document.getElementById(fieldId);
+  if(!el) return;
+  const start=el.selectionStart, end=el.selectionEnd;
+  el.value=el.value.slice(0,start)+varStr+el.value.slice(end);
+  el.selectionStart=el.selectionEnd=start+varStr.length;
+  el.focus();
+  // trigger save
+  const sid=activeSurveyId;
+  if(fieldId==='pa-body-text') saveSurveyEmail(sid,'emailBody',el.value);
+}
+
 async function sendPA(surveyId){
   if(!prefs.paUrl){alert('請先設定 Webhook URL');return;}
   const survey=getSurvey(surveyId);const st=surveyStats(survey);const nF=survey.files.length;
+
+  // ── 防呆：信件主旨/內文檢查 ──
+  const hasSubject=!!(survey.emailSubject&&survey.emailSubject.trim());
+  const hasBody=!!(survey.emailBody&&survey.emailBody.trim());
+  if(!hasSubject||!hasBody){
+    const missing=!hasSubject&&!hasBody?'信件主旨和內文':!hasSubject?'信件主旨':'信件內文';
+    const go=confirm(`⚠️ 尚未填寫「${missing}」\n\nPA 發出的信件內容將會是空白，確定要繼續發送嗎？\n（建議先展開 PA 區塊填寫後再發送）`);
+    if(!go) return;
+  }
+
   const now=new Date();const sentAt=`${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   const undoneList=survey.members.filter(m=>!m.retired).map(m=>{
     const missing=survey.files.filter((_,fi)=>!getCheck(survey,m.id,fi));
-    return missing.length?{type:m.type||'',district:m.district,manager:m.manager,emp_id:m.emp_id||'',email:m.email||'',missing}:null;
+    if(!missing.length) return null;
+    // 把變數套入個人化主旨/內文
+    const missingStr=missing.join('、');
+    const replace=(tpl)=>(tpl||'')
+      .replace(/{{姓名}}/g, m.manager||m.name||'')
+      .replace(/{{單位}}/g, m.type||m.unit||'')
+      .replace(/{{缺交檔案}}/g, missingStr)
+      .replace(/{{活動名稱}}/g, survey.name)
+      .replace(/{{日期}}/g, sentAt.split(' ')[0]);
+    return {
+      type:m.type||'', district:m.district||m.name||'',
+      manager:m.manager||m.name||'', emp_id:m.emp_id||'',
+      email:m.email||'', missing,
+      emailSubject: replace(survey.emailSubject),
+      emailBody: replace(survey.emailBody),
+    };
   }).filter(Boolean);
   const noEmail=undoneList.filter(u=>!u.email);
   if(noEmail.length){if(!confirm(`${noEmail.length} 人未填 Email 將不會收到通知，確定繼續？`))return;}
   const msg=buildLineMsg(survey);
-  const payload={surveyName:survey.name,sentAt,totalCount:st.total,doneCount:st.fullDone,undoneCount:st.undone,undoneList,message:msg};
+  const payload={
+    surveyName:survey.name, sentAt,
+    totalCount:st.total, doneCount:st.fullDone, undoneCount:st.undone,
+    undoneList, message:msg,
+    // 信件範本（給 PA 備用，各人已套入個人化版本在 undoneList 裡）
+    emailSubjectTemplate:survey.emailSubject||'',
+    emailBodyTemplate:survey.emailBody||'',
+  };
   const btn=document.getElementById('pa-send-btn');const res=document.getElementById('pa-result');
   document.getElementById('pa-body')?.classList.remove('hidden');btn.disabled=true;btn.textContent='發送中…';
   if(res)res.innerHTML=`<span class="pa-status sending">⏳ 傳送中…</span>`;
@@ -758,8 +993,7 @@ async function sendPA(surveyId){
 // ── Survey modal ──
 function openNewSurvey(){editSurveyId=null;modalMembers=[];modalFiles=[''];selectedTpls=new Set();document.getElementById('f-name').value='';document.getElementById('modal-survey-title').textContent='新增調查活動';document.getElementById('modal-delete-btn').style.display='none';renderTplGrid();renderMembersPreview();renderFilesInput();openModal('modal-survey');}
 function openEditSurvey(id){const s=getSurvey(id);editSurveyId=id;modalMembers=s.members.map(m=>({...m}));modalFiles=[...s.files];selectedTpls=new Set();document.getElementById('f-name').value=s.name;document.getElementById('modal-survey-title').textContent='編輯調查活動';document.getElementById('modal-delete-btn').style.display='inline-flex';renderTplGrid();renderMembersPreview();renderFilesInput();openModal('modal-survey');}
-function renderTplGrid(){document.getElementById('tpl-grid').innerHTML=Object.entries(TEMPLATES).map(([k,t])=>`<button class="tpl-btn ${selectedTpls.has(k)?'selected':''}" onclick="applyTemplate('${k}')"><strong>${t.name}</strong><span>${t.desc}</span></button>`).join('');}
-function applyTemplate(k){TEMPLATES[k].members.forEach(m=>{if(!modalMembers.find(x=>x.district===m.district&&x.type===m.type))modalMembers.push({...m,id:uid(),email:''});});selectedTpls.add(k);renderTplGrid();renderMembersPreview();}
+
 function renderMembersPreview(){
   const el=document.getElementById('members-preview');
   if(!modalMembers.length){el.innerHTML='<div style="padding:12px;text-align:center;color:var(--muted);font-size:var(--fs-sm)">尚無成員</div>';return;}
@@ -864,8 +1098,518 @@ function openModal(id){if(id==='modal-pa')document.getElementById('pa-url-input'
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.overlay').forEach(el=>{el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');});});
 
+
+// ── Group Manager (replaces Template Manager) ──
+const TPL_STORE = 'tracker_templates_v1'; // keep same key so existing data is preserved
+const DEFAULT_GROUPS = [
+  {id:'elem', name:'國小區經理', members:[
+    {type:'國小',district:'北一區',manager:'陳清樺',emp_id:'1040911',email:''},
+    {type:'國小',district:'北二區',manager:'鄧克強',emp_id:'920233',email:''},
+    {type:'國小',district:'北三區',manager:'孫丕榮',emp_id:'1070801',email:''},
+    {type:'國小',district:'桃園區',manager:'王凡昇',emp_id:'970903',email:''},
+    {type:'國小',district:'桃竹區',manager:'高筠茹',emp_id:'1080823',email:''},
+    {type:'國小',district:'語北桃(台北)',manager:'陳健政',emp_id:'891213',email:''},
+    {type:'國小',district:'中一區',manager:'張怡斌',emp_id:'980710',email:''},
+    {type:'國小',district:'中二區',manager:'葉柏宏',emp_id:'961206',email:''},
+    {type:'國小',district:'雲嘉區',manager:'馬育民',emp_id:'961110',email:''},
+    {type:'國小',district:'台南區',manager:'楊堡弘',emp_id:'1000826',email:''},
+    {type:'國小',district:'高一區',manager:'劉豐明',emp_id:'891209',email:''},
+    {type:'國小',district:'高二區',manager:'洪清裕',emp_id:'971013',email:''},
+    {type:'國小',district:'語教中南(台中)',manager:'彭國斌',emp_id:'961003',email:''},
+  ]},
+  {id:'jhs', name:'國中區經理', members:[
+    {type:'國中',district:'北一區',manager:'顏程回',emp_id:'950907',email:''},
+    {type:'國中',district:'北二區',manager:'周士貽',emp_id:'1110915',email:''},
+    {type:'國中',district:'北三區',manager:'陳品豪',emp_id:'1030958',email:''},
+    {type:'國中',district:'北四區',manager:'楊正良',emp_id:'981008',email:''},
+    {type:'國中',district:'桃園區',manager:'陳芯玲',emp_id:'990108',email:''},
+    {type:'國中',district:'桃竹區',manager:'陳興',emp_id:'1020808',email:''},
+    {type:'國中',district:'中一區',manager:'岳君豪',emp_id:'1000805',email:''},
+    {type:'國中',district:'中二區',manager:'詹明鑫',emp_id:'930412',email:''},
+    {type:'國中',district:'台南區',manager:'楊哲寬',emp_id:'911038',email:''},
+    {type:'國中',district:'高一區',manager:'黃一訓',emp_id:'1020912',email:''},
+    {type:'國中',district:'高二區',manager:'洪瑞源',emp_id:'880920',email:''},
+  ]},
+];
+
+let userGroups = [];
+function loadTemplates(){
+  try{
+    const s=localStorage.getItem(TPL_STORE);
+    if(s){
+      const parsed=JSON.parse(s);
+      // support both old format [{id,name,desc,members}] and new
+      userGroups=parsed.map(g=>({
+        id:g.id||uid(), name:g.name||'未命名群組',
+        members:(g.members||[]).map(m=>({
+          id:m.id||uid(),
+          name:m.manager||m.name||'',
+          unit:m.type||m.unit||'',
+          role:m.role||'區經理',
+          emp_id:m.emp_id||'',
+          email:m.email||'',
+          // keep old fields for compatibility
+          manager:m.manager||m.name||'',
+          type:m.type||m.unit||'',
+          district:m.district||'',
+        }))
+      }));
+    } else {
+      userGroups=DEFAULT_GROUPS.map(g=>({...g,members:g.members.map(m=>({...m,id:uid(),name:m.manager,unit:m.type,role:'區經理'}))}));
+    }
+  } catch(e){
+    userGroups=DEFAULT_GROUPS.map(g=>({...g,members:g.members.map(m=>({...m,id:uid(),name:m.manager,unit:m.type,role:'區經理'}))}));
+  }
+}
+function saveTemplates(){ localStorage.setItem(TPL_STORE,JSON.stringify(userGroups)); }
+function getTemplates(){ return userGroups; }
+
+// ── renderTplGrid: used in survey new/edit modal ──
+function renderTplGrid(){
+  const grps=userGroups;
+  if(!grps.length){
+    document.getElementById('tpl-grid').innerHTML='<div style="grid-column:span 2;font-size:var(--fs-sm);color:var(--muted);padding:8px 0">尚無群組，請至「👥 群組管理」新增</div>';
+    return;
+  }
+  document.getElementById('tpl-grid').innerHTML=grps.map(g=>`
+    <button class="tpl-btn ${selectedTpls.has(g.id)?'selected':''}" onclick="applyTemplate('${g.id}')">
+      <strong>${g.name}</strong><span>${g.members.length} 位成員</span>
+    </button>`).join('');
+}
+function applyTemplate(gid){
+  const g=userGroups.find(x=>x.id===gid); if(!g) return;
+  g.members.forEach(m=>{
+    if(!modalMembers.find(x=>x.emp_id&&x.emp_id===m.emp_id))
+      modalMembers.push({
+        id:uid(), emp_id:m.emp_id, email:m.email,
+        // map to survey member fields
+        manager:m.name, type:m.unit, district:m.district||m.name,
+        name:m.name, unit:m.unit, role:m.role,
+      });
+  });
+  selectedTpls.add(gid); renderTplGrid(); renderMembersPreview();
+}
+
+// ── Group Manager UI state ──
+let gmGroupId=null;      // group being edited (null=new)
+let gmGroupMembers=[];   // working copy of members
+let gmMemberIdx=null;    // index of member being edited (null=new)
+
+
+function _gmSetPanel(panelIdx){
+  const panels=['gm-panel-list','gm-panel-edit','gm-panel-import','gm-panel-member'];
+  panels.forEach((id,i)=>document.getElementById(id).style.display=i===panelIdx?'':'none');
+}
+function _gmSetTab(activeId){
+  const tabs=['gm-tab-list','gm-tab-edit','gm-tab-import','gm-tab-member'];
+  tabs.forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(id==='gm-tab-list') el.style.display='';
+    else el.style.display=(id===activeId||el.classList.contains('active'))?'':'none';
+    el.classList.toggle('active', id===activeId);
+  });
+}
+function gmShowList(){
+  _gmSetPanel(0);
+  ['gm-tab-edit','gm-tab-import','gm-tab-member'].forEach(id=>{
+    const el=document.getElementById(id);if(el){el.style.display='none';el.classList.remove('active');}
+  });
+  document.getElementById('gm-tab-list').classList.add('active');
+  document.getElementById('gm-title').textContent='👥 群組管理';
+  renderGroupList();
+}
+function gmShowEdit(){
+  _gmSetPanel(1);
+  document.getElementById('gm-tab-list').classList.remove('active');
+  document.getElementById('gm-tab-edit').style.display='';
+  document.getElementById('gm-tab-edit').classList.add('active');
+  ['gm-tab-import','gm-tab-member'].forEach(id=>{
+    const el=document.getElementById(id);if(el){el.style.display='none';el.classList.remove('active');}
+  });
+  renderGmMemberTable();
+}
+function gmShowImport(){
+  gmImportRows=[];gmImportChecked=new Set();gmImportFilterQ='';
+  document.getElementById('gm-import-step-a').style.display='';
+  document.getElementById('gm-import-step-b').style.display='none';
+  document.getElementById('gm-drop-zone').classList.remove('drag');
+  _gmSetPanel(2);
+  document.getElementById('gm-tab-list').classList.remove('active');
+  document.getElementById('gm-tab-edit').classList.remove('active');
+  document.getElementById('gm-tab-import').style.display='';
+  document.getElementById('gm-tab-import').classList.add('active');
+  document.getElementById('gm-tab-import-label').textContent='匯入名單';
+  document.getElementById('gm-tab-member').style.display='none';
+  document.getElementById('gm-tab-member').classList.remove('active');
+  document.getElementById('gm-title').textContent='⬆ 匯入名單';
+}
+function gmShowMember(){
+  _gmSetPanel(3);
+  document.getElementById('gm-tab-list').classList.remove('active');
+  document.getElementById('gm-tab-edit').classList.remove('active');
+  document.getElementById('gm-tab-import').classList.remove('active');
+  document.getElementById('gm-tab-member').style.display='';
+  document.getElementById('gm-tab-member').classList.add('active');
+}
+
+function openGroupManager(){
+  gmGroupId=null; gmGroupMembers=[];
+  gmShowList();
+  openModal('modal-group-manager');
+}
+
+
+
+
+
+let gmImportRows=[];       // all parsed rows from file
+let gmImportChecked=new Set(); // indices of checked rows
+let gmImportFilterQ='';
+
+function gmHandleFileDrop(e){
+  e.preventDefault();e.currentTarget.classList.remove('drag');
+  const f=e.dataTransfer.files[0];if(f)gmParseFile(f);
+}
+function gmHandleFileSelect(e){
+  const f=e.target.files[0];if(f)gmParseFile(f);
+  e.target.value='';
+}
+
+function gmParseFile(file){
+  const ext=file.name.split('.').pop().toLowerCase();
+  document.getElementById('gm-import-file-name').textContent='📄 '+file.name;
+  if(ext==='csv'){
+    const r=new FileReader();
+    r.onload=ev=>{gmImportRows=parseCSV(ev.target.result);gmShowImportPreview();};
+    r.readAsText(file,'UTF-8');
+  } else if(ext==='xlsx'||ext==='xls'){
+    const go=()=>{
+      const r=new FileReader();
+      r.onload=ev=>{
+        const wb=XLSX.read(ev.target.result,{type:'array'});
+        const ws=wb.Sheets[wb.SheetNames[0]];
+        const data=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+        gmImportRows=[];
+        for(let i=1;i<data.length;i++){
+          const row=data[i];if(!row[1]&&!row[2])continue;
+          gmImportRows.push({type:String(row[0]||''),district:String(row[1]||''),manager:String(row[2]||''),emp_id:String(row[3]||''),email:String(row[4]||''),role:String(row[5]||'')});
+        }
+        gmShowImportPreview();
+      };
+      r.readAsArrayBuffer(file);
+    };
+    if(!window.XLSX){const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=go;document.head.appendChild(s);}
+    else go();
+  } else { alert('不支援的格式，請使用 .csv 或 .xlsx'); }
+}
+
+function gmShowImportPreview(){
+  // default: check all
+  gmImportChecked=new Set(gmImportRows.map((_,i)=>i));
+  document.getElementById('gm-import-step-a').style.display='none';
+  document.getElementById('gm-import-step-b').style.display='';
+  gmRenderImportList();
+}
+
+function gmImportReset(){
+  document.getElementById('gm-import-step-a').style.display='';
+  document.getElementById('gm-import-step-b').style.display='none';
+  gmImportRows=[];gmImportChecked=new Set();gmImportFilterQ='';
+  document.getElementById('gm-import-search').value='';
+}
+
+function gmImportFilter(q){
+  gmImportFilterQ=q.toLowerCase();
+  gmRenderImportList();
+}
+
+function gmToggleAll(checked){
+  const visible=gmImportRows.map((_,i)=>i).filter(i=>{
+    const r=gmImportRows[i];
+    return !gmImportFilterQ||[r.manager,r.type,r.district,r.email].some(v=>v&&v.toLowerCase().includes(gmImportFilterQ));
+  });
+  visible.forEach(i=>{ if(checked) gmImportChecked.add(i); else gmImportChecked.delete(i); });
+  gmRenderImportList();
+}
+
+function gmToggleOne(i, checked){
+  if(checked) gmImportChecked.add(i); else gmImportChecked.delete(i);
+  // update select-all state
+  const allChk=document.getElementById('gm-select-all');
+  if(allChk) allChk.indeterminate = gmImportChecked.size>0 && gmImportChecked.size<gmImportRows.length;
+  document.getElementById('gm-import-sel-count').textContent=`已選 ${gmImportChecked.size} / ${gmImportRows.length}`;
+}
+
+function gmRenderImportList(){
+  const list=document.getElementById('gm-import-list');
+  const total=gmImportRows.length;
+  const q=gmImportFilterQ;
+
+  const visible=gmImportRows.map((r,i)=>({r,i})).filter(({r})=>
+    !q||[r.manager,r.type,r.district,r.email,r.role].some(v=>v&&v.toLowerCase().includes(q))
+  );
+
+  document.getElementById('gm-import-total-hint').textContent=
+    q ? `篩選結果 ${visible.length} / ${total} 筆` : `共 ${total} 筆`;
+  document.getElementById('gm-import-sel-count').textContent=
+    `已選 ${gmImportChecked.size} / ${total}`;
+
+  const allVizChecked=visible.length>0&&visible.every(({i})=>gmImportChecked.has(i));
+  const someChecked=visible.some(({i})=>gmImportChecked.has(i));
+  const allChk=document.getElementById('gm-select-all');
+  if(allChk){allChk.checked=allVizChecked;allChk.indeterminate=!allVizChecked&&someChecked;}
+
+  if(!visible.length){
+    list.innerHTML='<div style="padding:16px;text-align:center;color:var(--muted);font-size:var(--fs-sm)">沒有符合「'+q+'」的項目</div>';
+    return;
+  }
+
+  list.innerHTML=visible.map(({r,i})=>`
+    <label style="display:grid;grid-template-columns:40px 1fr 80px 1fr 90px;align-items:center;border-bottom:1px solid var(--border);cursor:pointer;padding:0;background:${gmImportChecked.has(i)?'var(--accent-dim)':'var(--surface)'}" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='${gmImportChecked.has(i)?'var(--accent-dim)':'var(--surface)'}'">
+      <div style="padding:10px 0 10px 14px;text-align:center">
+        <input type="checkbox" ${gmImportChecked.has(i)?'checked':''} onchange="gmToggleOne(${i},this.checked);gmRenderImportList()" style="accent-color:var(--accent);width:16px;height:16px">
+      </div>
+      <div style="padding:10px 14px">
+        <div style="font-weight:600;font-size:var(--fs-base)">${r.manager||r.name||'—'}</div>
+        <div style="font-size:calc(var(--fs-sm) - 1px);color:var(--muted)">${r.role||'區經理'}</div>
+      </div>
+      <div style="padding:10px 14px;font-size:var(--fs-sm);color:var(--muted2)">${r.type||r.unit||'—'}</div>
+      <div style="padding:10px 14px;font-size:var(--fs-sm);font-family:var(--mono);color:${r.email?'var(--blue)':'var(--border2)'}">${r.email||'未填'}</div>
+      <div style="padding:10px 14px;font-size:var(--fs-sm);font-family:var(--mono);color:var(--muted)">${r.emp_id||'—'}</div>
+    </label>`).join('');
+}
+
+function gmConfirmImport(){
+  if(!gmImportChecked.size){alert('請至少勾選一位成員');return;}
+  const toAdd=gmImportRows.filter((_,i)=>gmImportChecked.has(i));
+  let added=0;
+  toAdd.forEach(r=>{
+    const name=r.manager||r.name||'';
+    if(!name)return;
+    // skip if emp_id already in group
+    if(r.emp_id&&gmGroupMembers.find(x=>x.emp_id===r.emp_id))return;
+    gmGroupMembers.push({
+      id:uid(), name, unit:r.type||r.unit||'', role:r.role||'區經理',
+      emp_id:r.emp_id||'', email:r.email||'',
+      manager:name, type:r.type||'', district:r.district||name,
+    });
+    added++;
+  });
+  alert(`✅ 已加入 ${added} 位成員${toAdd.length-added>0?`（${toAdd.length-added} 位因員工編號重複略過）`:''}`);
+  gmShowEdit();
+}
+
+function downloadMemberTemplate(){
+  const csv='\uFEFF單位,名稱,姓名,員工編號,Email,職稱\n國小,北一區,陳清樺,1040911,,區經理\n國中,北一區,顏程回,950907,,區經理\n';
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));a.download='名單範本.csv';a.click();
+}
+
+
+function renderGroupList(){
+  const el=document.getElementById('gm-group-list');
+  if(!userGroups.length){
+    el.innerHTML='<div style="padding:32px;text-align:center;color:var(--muted);font-size:var(--fs-sm)">尚無群組<br>點「新增群組」或匯入 CSV 開始建立</div>';
+    return;
+  }
+  el.innerHTML=userGroups.map(g=>`
+    <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:8px">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:var(--fs-base)">${g.name}</div>
+        <div style="font-size:var(--fs-sm);color:var(--muted);margin-top:3px;font-family:var(--mono)">${g.members.length} 位成員
+          ${g.members.some(m=>!m.email)?'<span style="color:var(--yellow);margin-left:6px">⚠ 部分未填 Email</span>':'<span style="color:var(--green);margin-left:6px">✓ Email 齊全</span>'}
+        </div>
+      </div>
+      <button class="btn" onclick="gmOpenGroup('${g.id}')">✏️ 編輯成員</button>
+      <button class="btn" onclick="exportGroupCSVById('${g.id}')">⬇ CSV</button>
+    </div>`).join('');
+}
+
+function gmNewGroup(){
+  gmGroupId=null;
+  gmGroupMembers=[];
+  document.getElementById('gm-group-name').value='';
+  document.getElementById('gm-delete-group-btn').style.display='none';
+  document.getElementById('gm-tab-edit-label').textContent='新增群組';
+  document.getElementById('gm-title').textContent='新增群組';
+  gmShowEdit();
+}
+
+function gmOpenGroup(id){
+  const g=userGroups.find(x=>x.id===id); if(!g) return;
+  gmGroupId=id;
+  gmGroupMembers=g.members.map(m=>({...m}));
+  document.getElementById('gm-group-name').value=g.name;
+  document.getElementById('gm-delete-group-btn').style.display='inline-flex';
+  document.getElementById('gm-tab-edit-label').textContent=g.name;
+  document.getElementById('gm-title').textContent='✏️ '+g.name;
+  gmShowEdit();
+}
+
+function renderGmMemberTable(){
+  const el=document.getElementById('gm-member-table');
+  document.getElementById('gm-member-count').textContent=gmGroupMembers.length+' 位成員';
+  if(!gmGroupMembers.length){
+    el.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:var(--fs-sm)">尚無成員，點「新增成員」加入</div>';
+    return;
+  }
+  const last=gmGroupMembers.length-1;
+  el.innerHTML=`
+    <div style="display:grid;grid-template-columns:48px 1fr 80px 1fr 90px 80px;background:var(--surface2);border-bottom:1px solid var(--border)">
+      <div class="th">順序</div><div class="th">姓名</div><div class="th">單位</div><div class="th">Email</div><div class="th">員工編號</div><div class="th">操作</div>
+    </div>
+    ${gmGroupMembers.map((m,i)=>`
+    <div style="display:grid;grid-template-columns:48px 1fr 80px 1fr 90px 80px;align-items:center;border-bottom:1px solid var(--border);background:var(--surface);transition:background .1s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='var(--surface)'">
+      <div style="padding:6px 8px;display:flex;flex-direction:column;gap:2px;align-items:center">
+        <button onclick="gmMoveUp(${i})" ${i===0?'disabled':''} style="background:none;border:1px solid var(--border2);border-radius:4px;color:${i===0?'var(--border2)':'var(--muted)'};cursor:${i===0?'default':'pointer'};padding:1px 6px;font-size:11px;line-height:1.4" title="上移">▲</button>
+        <span style="font-size:10px;font-family:var(--mono);color:var(--muted)">${i+1}</span>
+        <button onclick="gmMoveDown(${i})" ${i===last?'disabled':''} style="background:none;border:1px solid var(--border2);border-radius:4px;color:${i===last?'var(--border2)':'var(--muted)'};cursor:${i===last?'default':'pointer'};padding:1px 6px;font-size:11px;line-height:1.4" title="下移">▼</button>
+      </div>
+      <div style="padding:10px 14px">
+        <div style="font-weight:600;font-size:var(--fs-base)">${m.name||'—'}</div>
+        <div style="font-size:calc(var(--fs-sm) - 1px);color:var(--muted);margin-top:1px">${m.role||''}</div>
+      </div>
+      <div style="padding:10px 14px;font-size:var(--fs-sm);color:var(--muted2)">${m.unit||'—'}</div>
+      <div style="padding:10px 14px;font-size:calc(var(--fs-sm));font-family:var(--mono);color:${m.email?'var(--blue)':'var(--border2)'}">${m.email||'未填'}</div>
+      <div style="padding:10px 14px;font-size:var(--fs-sm);font-family:var(--mono);color:var(--muted)">${m.emp_id||'—'}</div>
+      <div style="padding:6px 8px;display:flex;gap:4px">
+        <button class="btn" style="padding:4px 8px;min-width:0;font-size:12px" onclick="gmEditMember(${i})" title="編輯">✏️</button>
+      </div>
+    </div>`).join('')}`;
+}
+
+function gmMoveUp(i){
+  if(i===0) return;
+  [gmGroupMembers[i-1],gmGroupMembers[i]]=[gmGroupMembers[i],gmGroupMembers[i-1]];
+  renderGmMemberTable();
+}
+function gmMoveDown(i){
+  if(i>=gmGroupMembers.length-1) return;
+  [gmGroupMembers[i+1],gmGroupMembers[i]]=[gmGroupMembers[i],gmGroupMembers[i+1]];
+  renderGmMemberTable();
+}
+
+function gmAddMemberMode(){
+  gmMemberIdx=null;
+  ['gm-m-name','gm-m-unit','gm-m-role','gm-m-empid','gm-m-email'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('gm-member-delete-btn').style.display='none';
+  document.getElementById('gm-member-panel-title').textContent='新增成員';
+  document.getElementById('gm-tab-member-label').textContent='新增成員';
+  gmShowMember();
+  document.getElementById('gm-m-name').focus();
+}
+
+function gmEditMember(i){
+  const m=gmGroupMembers[i];
+  gmMemberIdx=i;
+  document.getElementById('gm-m-name').value=m.name||'';
+  document.getElementById('gm-m-unit').value=m.unit||'';
+  document.getElementById('gm-m-role').value=m.role||'';
+  document.getElementById('gm-m-empid').value=m.emp_id||'';
+  document.getElementById('gm-m-email').value=m.email||'';
+  document.getElementById('gm-member-delete-btn').style.display='inline-flex';
+  document.getElementById('gm-member-panel-title').textContent='編輯成員：'+m.name;
+  document.getElementById('gm-tab-member-label').textContent=m.name;
+  gmShowMember();
+  document.getElementById('gm-m-name').focus();
+}
+
+function gmSaveMember(){
+  const name=document.getElementById('gm-m-name').value.trim();
+  if(!name){alert('請填入姓名');return;}
+  const m={
+    id: gmMemberIdx!==null ? (gmGroupMembers[gmMemberIdx].id||uid()) : uid(),
+    name, unit:document.getElementById('gm-m-unit').value.trim(),
+    role:document.getElementById('gm-m-role').value.trim(),
+    emp_id:document.getElementById('gm-m-empid').value.trim(),
+    email:document.getElementById('gm-m-email').value.trim(),
+    // keep legacy fields for survey compatibility
+    manager:name, type:document.getElementById('gm-m-unit').value.trim(),
+    district:document.getElementById('gm-m-name').value.trim(),
+  };
+  if(gmMemberIdx!==null) gmGroupMembers[gmMemberIdx]=m;
+  else gmGroupMembers.push(m);
+  gmShowEdit();
+}
+
+function gmDeleteMember(){
+  if(gmMemberIdx===null) return;
+  const m=gmGroupMembers[gmMemberIdx];
+  if(!confirm('確定刪除成員「'+m.name+'」？')) return;
+  gmGroupMembers.splice(gmMemberIdx,1);
+  gmMemberIdx=null;
+  gmShowEdit();
+}
+
+function gmSaveGroup(){
+  const name=document.getElementById('gm-group-name').value.trim();
+  if(!name){alert('請填入群組名稱');return;}
+  if(gmGroupId){
+    const g=userGroups.find(x=>x.id===gmGroupId);
+    if(g){g.name=name;g.members=gmGroupMembers;}
+  } else {
+    const newId=uid();
+    userGroups.push({id:newId,name,members:gmGroupMembers});
+    gmGroupId=newId;
+  }
+  saveTemplates();
+  alert('✅ 群組「'+name+'」已儲存（'+gmGroupMembers.length+' 位成員）');
+  gmShowList();
+}
+
+function gmDeleteGroup(){
+  const g=userGroups.find(x=>x.id===gmGroupId);
+  if(!g||!confirm('確定刪除群組「'+g.name+'」？此動作無法復原。')) return;
+  userGroups=userGroups.filter(x=>x.id!==gmGroupId);
+  saveTemplates();
+  gmShowList();
+}
+
+function exportGroupCSVById(id){
+  const g=userGroups.find(x=>x.id===id); if(!g) return;
+  const rows=g.members.map(m=>[m.unit||'',m.district||m.name||'',m.name||'',m.emp_id||'',m.email||'',m.role||''].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));
+  const csv='\uFEFF類型,區別,姓名,員工編號,Email,職稱\n'+rows.join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));a.download=g.name+'.csv';a.click();
+}
+function exportGroupCSV(){ if(gmGroupId) exportGroupCSVById(gmGroupId); }
+
+function exportGroupsJSON(){
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(userGroups,null,2)],{type:'application/json'}));
+  a.download='群組備份_'+Date.now()+'.json';a.click();
+}
+
+function handleTplBackupImport(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(!Array.isArray(d))throw new Error('格式錯誤');
+      if(!confirm('匯入 '+d.length+' 個群組（不覆蓋同 id 的現有群組），確定？'))return;
+      d.forEach(g=>{if(!userGroups.find(x=>x.id===g.id))userGroups.push(g);});
+      saveTemplates();renderGroupList();alert('群組匯入成功！');
+    }catch(err){alert('匯入失敗：'+err.message);}
+  };
+  r.readAsText(f);e.target.value='';
+}
+
+function handleTplFileSelect(e){ gmHandleFileSelect(e); }
+
+function createGroupFromRows(rows,defaultName){
+  const name=prompt('群組名稱：',defaultName||'新群組');
+  if(!name) return;
+  const members=rows.map(r=>({
+    id:uid(), name:r.manager||r.name||'', unit:r.type||r.unit||'',
+    role:r.role||'區經理', emp_id:r.emp_id||'', email:r.email||'',
+    manager:r.manager||'', type:r.type||'', district:r.district||'',
+  }));
+  userGroups.push({id:uid(),name,members});
+  saveTemplates(); renderGroupList();
+  alert('✅ 群組「'+name+'」已建立（'+members.length+' 位成員）');
+}
+
 // ── Init ──
-loadDB();loadPrefs();applyPrefs();renderSidebar();
+loadDB();loadPrefs();loadTemplates();applyPrefs();renderSidebar();
 if(db.surveys.length){activeSurveyId=db.surveys[0].id;renderSurveyView();}
 </script>
 </body>
